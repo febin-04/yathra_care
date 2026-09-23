@@ -41,6 +41,7 @@ export default function GrievanceForm() {
   const [showRouteDropdown, setShowRouteDropdown] = useState(false);
 
   const [selectedCategory, setSelectedCategory] = useState('');
+  const [showCategoryDropdown, setShowCategoryDropdown] = useState(false);
   const [location, setLocation] = useState('');
   const [description, setDescription] = useState('');
   const [evidenceFileName, setEvidenceFileName] = useState('');
@@ -64,6 +65,7 @@ export default function GrievanceForm() {
 
   const desktopDropdownRef = useRef<HTMLDivElement>(null);
   const mobileDropdownRef = useRef<HTMLDivElement>(null);
+  const desktopCategoryDropdownRef = useRef<HTMLDivElement>(null);
 
   const handleSelectRoute = (id: string, name: string) => {
     setSelectedRouteId(id);
@@ -165,6 +167,10 @@ export default function GrievanceForm() {
       const insideMobile = mobileDropdownRef.current?.contains(target);
       if (!insideDesktop && !insideMobile) {
         setShowRouteDropdown(false);
+      }
+      const insideCategory = desktopCategoryDropdownRef.current?.contains(target);
+      if (!insideCategory) {
+        setShowCategoryDropdown(false);
       }
     }
     document.addEventListener('mousedown', handleClickOutside);
@@ -593,7 +599,7 @@ export default function GrievanceForm() {
                   </div>
 
                   {/* 2. Category */}
-                  <div>
+                  <div className="relative" ref={desktopCategoryDropdownRef}>
                     <div className="flex justify-between items-center mb-1.5">
                       <label className="block text-xs font-extrabold text-slate-700 uppercase tracking-wider">
                         2. Grievance Category <span className="text-rose-500">*</span>
@@ -604,19 +610,64 @@ export default function GrievanceForm() {
                         </span>
                       )}
                     </div>
-                    <select
-                      value={selectedCategory}
-                      onChange={(e) => setSelectedCategory(e.target.value)}
-                      className="w-full bg-slate-50 border border-slate-300 text-slate-900 rounded-xl p-3 text-xs font-semibold focus:outline-none focus:ring-2 focus:ring-desktop-hero"
-                      required
+
+                    <button
+                      type="button"
+                      onClick={() => setShowCategoryDropdown(!showCategoryDropdown)}
+                      className="w-full bg-slate-50 border border-slate-300 text-slate-900 rounded-xl p-3 text-xs font-semibold focus:outline-none focus:ring-2 focus:ring-desktop-hero flex items-center justify-between text-left shadow-sm hover:border-slate-400 transition-colors cursor-pointer"
                     >
-                      <option value="">-- Select Category --</option>
-                      {categories.map((cat) => (
-                        <option key={cat.id} value={cat.name}>
-                          {cat.name} ({cat.sla_hours} Hours SLA)
-                        </option>
-                      ))}
-                    </select>
+                      <span className={selectedCategory ? 'text-slate-900 font-bold' : 'text-slate-400 font-medium'}>
+                        {selectedCategory || '-- Select Category --'}
+                      </span>
+                      <ChevronDown className={`w-4 h-4 text-slate-400 transition-transform duration-200 ${showCategoryDropdown ? 'rotate-180 text-desktop-hero' : ''}`} />
+                    </button>
+
+                    {showCategoryDropdown && (
+                      <div className="absolute left-0 right-0 top-full mt-1.5 bg-white border border-slate-200 rounded-2xl shadow-2xl max-h-60 overflow-y-auto z-50 divide-y divide-slate-100 py-1">
+                        <div
+                          onMouseDown={(e) => {
+                            e.preventDefault();
+                            setSelectedCategory('');
+                            setShowCategoryDropdown(false);
+                          }}
+                          onClick={() => {
+                            setSelectedCategory('');
+                            setShowCategoryDropdown(false);
+                          }}
+                          className="p-3 text-xs text-slate-500 hover:bg-slate-50 cursor-pointer font-medium"
+                        >
+                          -- Unspecified / Select Category --
+                        </div>
+                        {categories.map((cat) => (
+                          <div
+                            key={cat.id}
+                            onMouseDown={(e) => {
+                              e.preventDefault();
+                              setSelectedCategory(cat.name);
+                              setShowCategoryDropdown(false);
+                            }}
+                            onClick={() => {
+                              setSelectedCategory(cat.name);
+                              setShowCategoryDropdown(false);
+                            }}
+                            className={`p-3 text-xs cursor-pointer transition-colors flex items-center justify-between group ${
+                              selectedCategory === cat.name
+                                ? 'bg-desktop-bgTint font-bold text-desktop-hero'
+                                : 'hover:bg-slate-50 text-slate-800'
+                            }`}
+                          >
+                            <div className="flex items-center space-x-2.5">
+                              <div className={`w-2 h-2 rounded-full ${selectedCategory === cat.name ? 'bg-desktop-hero' : 'bg-slate-300 group-hover:bg-slate-400'}`}></div>
+                              <span className="font-semibold">{cat.name}</span>
+                            </div>
+                            <span className="text-[11px] font-bold text-amber-700 bg-amber-50 border border-amber-200 px-2 py-0.5 rounded-md flex items-center gap-1">
+                              <Clock className="w-3 h-3 text-amber-600" />
+                              {cat.sla_hours}h SLA
+                            </span>
+                          </div>
+                        ))}
+                      </div>
+                    )}
                   </div>
 
                   {/* 3. Location */}
