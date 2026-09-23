@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import Button from '@/components/ui/Button';
@@ -24,6 +24,7 @@ import {
   MapPin,
   Send,
   Sparkles,
+  ChevronDown,
 } from 'lucide-react';
 
 export default function EntryPage() {
@@ -64,6 +65,21 @@ export default function EntryPage() {
   const [searchRef, setSearchRef] = useState('');
   const [selectedQuickRoute, setSelectedQuickRoute] = useState('');
   const [routesList, setRoutesList] = useState<{ id: string; name: string }[]>([]);
+  const [showQuickRouteDropdown, setShowQuickRouteDropdown] = useState(false);
+  const quickRouteDropdownRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    function handleClickOutside(event: MouseEvent) {
+      if (
+        quickRouteDropdownRef.current &&
+        !quickRouteDropdownRef.current.contains(event.target as Node)
+      ) {
+        setShowQuickRouteDropdown(false);
+      }
+    }
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
 
   useEffect(() => {
     async function loadMeta() {
@@ -161,19 +177,57 @@ export default function EntryPage() {
                   <label className="block text-[11px] font-black text-white/90 uppercase tracking-widest drop-shadow-sm">
                     LODGE COMPLAINT FOR BUS ROUTE
                   </label>
-                  <form onSubmit={handleQuickRouteSubmit} className="flex gap-2">
-                    <select
-                      value={selectedQuickRoute}
-                      onChange={(e) => setSelectedQuickRoute(e.target.value)}
-                      className="flex-1 bg-white text-slate-900 border border-white/40 rounded-2xl py-3 px-4 text-xs font-semibold focus:outline-none focus:ring-2 focus:ring-desktop-accent shadow-sm"
-                    >
-                      <option value="">-- Select Bus Route --</option>
-                      {routesList.map((r) => (
-                        <option key={r.id} value={r.id}>
-                          {r.id}: {r.name}
-                        </option>
-                      ))}
-                    </select>
+                  <form onSubmit={handleQuickRouteSubmit} className="flex gap-2 relative">
+                    <div className="flex-1 relative" ref={quickRouteDropdownRef}>
+                      <button
+                        type="button"
+                        onClick={() => setShowQuickRouteDropdown((prev) => !prev)}
+                        className="w-full bg-white text-slate-900 border border-white/40 rounded-2xl py-3 px-4 text-xs font-semibold focus:outline-none focus:ring-2 focus:ring-desktop-accent shadow-sm flex items-center justify-between cursor-pointer hover:bg-slate-50 transition-colors text-left"
+                      >
+                        <span className="truncate pr-2">
+                          {selectedQuickRoute
+                            ? `${selectedQuickRoute}: ${routesList.find((r) => r.id === selectedQuickRoute)?.name || ''}`
+                            : '-- Select Bus Route --'}
+                        </span>
+                        <ChevronDown className={`w-4 h-4 text-slate-500 shrink-0 transition-transform duration-200 ${showQuickRouteDropdown ? 'rotate-180' : ''}`} />
+                      </button>
+
+                      {showQuickRouteDropdown && (
+                        <div className="absolute left-0 right-0 top-full mt-2 bg-white rounded-2xl shadow-2xl border border-slate-100 py-2 z-50 max-h-60 overflow-y-auto text-slate-800 text-xs font-semibold">
+                          <div
+                            onMouseDown={(e) => {
+                              e.preventDefault();
+                              setSelectedQuickRoute('');
+                              setShowQuickRouteDropdown(false);
+                            }}
+                            className={`px-4 py-2.5 hover:bg-blue-50 cursor-pointer flex items-center justify-between ${
+                              !selectedQuickRoute ? 'bg-blue-50/70 text-blue-700 font-bold' : 'text-slate-700'
+                            }`}
+                          >
+                            <span>-- Select Bus Route --</span>
+                            {!selectedQuickRoute && <CheckCircle2 className="w-3.5 h-3.5 text-blue-600" />}
+                          </div>
+                          {routesList.map((r) => (
+                            <div
+                              key={r.id}
+                              onMouseDown={(e) => {
+                                e.preventDefault();
+                                setSelectedQuickRoute(r.id);
+                                setShowQuickRouteDropdown(false);
+                              }}
+                              className={`px-4 py-2.5 hover:bg-blue-50 cursor-pointer flex items-center justify-between border-t border-slate-50 ${
+                                selectedQuickRoute === r.id ? 'bg-blue-50/70 text-blue-700 font-bold' : 'text-slate-700'
+                              }`}
+                            >
+                              <span>
+                                {r.id}: {r.name}
+                              </span>
+                              {selectedQuickRoute === r.id && <CheckCircle2 className="w-3.5 h-3.5 text-blue-600" />}
+                            </div>
+                          ))}
+                        </div>
+                      )}
+                    </div>
                     <button
                       type="submit"
                       className="bg-desktop-accent hover:bg-desktop-accentHover text-white px-5 py-3 rounded-2xl text-xs font-black uppercase tracking-wider transition-all shadow-md shrink-0 cursor-pointer"
