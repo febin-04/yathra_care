@@ -29,7 +29,11 @@ import {
 import { classifyDescriptionLocal } from '@/lib/classifier';
 import Link from 'next/link';
 
-export default function GrievanceForm() {
+interface GrievanceFormProps {
+  initialRouteId?: string;
+}
+
+export default function GrievanceForm({ initialRouteId }: GrievanceFormProps = {}) {
   const [routes, setRoutes] = useState<Route[]>([]);
   const [categories, setCategories] = useState<Category[]>([]);
   const [depots, setDepots] = useState<Depot[]>([]);
@@ -159,6 +163,18 @@ export default function GrievanceForm() {
       return () => window.removeEventListener('online', syncOfflineQueue);
     }
   }, []);
+
+  useEffect(() => {
+    if (initialRouteId && routes.length > 0) {
+      const matched = routes.find(
+        (r) => r.id.toLowerCase() === initialRouteId.toLowerCase()
+      );
+      if (matched) {
+        setSelectedRouteId(matched.id);
+        setRouteQuery(`${matched.id} - ${matched.name}`);
+      }
+    }
+  }, [initialRouteId, routes]);
 
   useEffect(() => {
     function handleClickOutside(event: MouseEvent) {

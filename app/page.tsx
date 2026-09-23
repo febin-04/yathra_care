@@ -90,6 +90,10 @@ export default function EntryPage() {
   const handleQuickRouteSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (selectedQuickRoute) {
+      const el = document.getElementById('form');
+      if (el) {
+        el.scrollIntoView({ behavior: 'smooth' });
+      }
       router.push(`/?route=${encodeURIComponent(selectedQuickRoute)}#form`);
     }
   };
@@ -387,7 +391,7 @@ export default function EntryPage() {
 
         {/* SUBMISSION FORM CONTAINER */}
         <div id="form" className="scroll-mt-20">
-          <GrievanceForm />
+          <GrievanceForm initialRouteId={selectedQuickRoute} />
         </div>
       </div>
     </div>
