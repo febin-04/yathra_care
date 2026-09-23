@@ -90,10 +90,14 @@ export async function sendGrievanceConfirmationEmail(data: {
         </html>
       `,
     });
-    console.log(`[Resend] Grievance confirmation email sent to ${data.passengerEmail} for ticket ${data.referenceNumber}`);
+    if (response.error) {
+      console.error(`[Resend API Error] Could not send confirmation to ${data.passengerEmail}:`, response.error);
+    } else {
+      console.log(`[Resend Success] Grievance confirmation email sent to ${data.passengerEmail} (ID: ${response.data?.id})`);
+    }
     return response;
   } catch (error) {
-    console.error(`[Resend Error] Failed to send email to ${data.passengerEmail}:`, error);
+    console.error(`[Resend Exception] Failed to send email to ${data.passengerEmail}:`, error);
   }
 }
 
@@ -173,9 +177,13 @@ export async function sendStatusUpdateEmail(data: {
         </html>
       `,
     });
-    console.log(`[Resend] Status update email sent to ${data.passengerEmail} for ticket ${data.referenceNumber} (${data.newStatus})`);
+    if (response.error) {
+      console.error(`[Resend API Error] Could not send status update to ${data.passengerEmail}:`, response.error);
+    } else {
+      console.log(`[Resend Success] Status update email sent to ${data.passengerEmail} (ID: ${response.data?.id})`);
+    }
     return response;
   } catch (error) {
-    console.error(`[Resend Error] Failed to send status update email to ${data.passengerEmail}:`, error);
+    console.error(`[Resend Exception] Failed to send status update email to ${data.passengerEmail}:`, error);
   }
 }
