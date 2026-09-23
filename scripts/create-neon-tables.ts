@@ -227,9 +227,25 @@ async function main() {
   `;
   console.log('Created Tables in Neon PostgreSQL:');
   for (const t of tableList) {
-    const countResult = await sql`SELECT count(*)::int as count FROM ${sql(t.table_name)}`;
-    console.log(` • ${t.table_name}: ${countResult[0]?.count ?? 0} rows`);
+    console.log(` • Table: ${t.table_name}`);
   }
+
+  const depotsCount = await sql`SELECT count(*)::int as count FROM depots`;
+  const routesCount = await sql`SELECT count(*)::int as count FROM routes`;
+  const categoriesCount = await sql`SELECT count(*)::int as count FROM categories`;
+  const complaintsCount = await sql`SELECT count(*)::int as count FROM complaints`;
+  const statusHistoryCount = await sql`SELECT count(*)::int as count FROM status_history`;
+  const notificationsCount = await sql`SELECT count(*)::int as count FROM notifications`;
+  const feedbackCount = await sql`SELECT count(*)::int as count FROM feedback`;
+
+  console.log(`\nRow counts:`);
+  console.log(` • depots: ${depotsCount[0].count}`);
+  console.log(` • routes: ${routesCount[0].count}`);
+  console.log(` • categories: ${categoriesCount[0].count}`);
+  console.log(` • complaints: ${complaintsCount[0].count}`);
+  console.log(` • status_history: ${statusHistoryCount[0].count}`);
+  console.log(` • notifications: ${notificationsCount[0].count}`);
+  console.log(` • feedback: ${feedbackCount[0].count}`);
 
   console.log('\n✅ All necessary tables created and verified in Neon PostgreSQL successfully!');
 }
