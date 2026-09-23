@@ -48,9 +48,9 @@ export const Preloader: React.FC = () => {
           <img
             src="/logo-full-white.png"
             alt="Yathra Care Logo"
-            className="h-24 sm:h-28 w-auto object-contain drop-shadow-xl"
+            className="h-32 sm:h-36 w-auto object-contain drop-shadow-xl"
           />
-          <p className="text-xs text-blue-200 font-medium tracking-wide">
+          <p className="text-xs sm:text-sm text-blue-200 font-medium tracking-wide">
             State Transport Passenger Grievance Portal
           </p>
         </div>

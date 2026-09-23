@@ -61,14 +61,14 @@ export default function Header() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16">
           {/* Brand Logo & Name (Native White Transparent Logo) */}
-          <Link href="/" className="flex items-center space-x-3 group">
+          <Link href="/" className="flex items-center space-x-3 group py-1">
             <img
               src="/logo-full-white.png"
               alt="Yathra Care Logo"
-              className="h-12 sm:h-13 w-auto object-contain group-hover:scale-105 transition-transform shrink-0"
+              className="h-14 sm:h-15 w-auto object-contain group-hover:scale-105 transition-transform shrink-0"
             />
             <div className="hidden sm:block border-l border-white/20 pl-3">
-              <p className="text-[11px] text-slate-300 font-semibold">Passenger Grievance Portal</p>
+              <p className="text-xs text-slate-300 font-semibold tracking-wide">Passenger Grievance Portal</p>
             </div>
           </Link>
 
