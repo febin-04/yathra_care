@@ -170,6 +170,27 @@ export function createComplaint(data: {
       INSERT INTO status_history (complaint_id, from_status, to_status, changed_at, notes, changed_by)
       VALUES (?, NULL, 'SUBMITTED', ?, 'Initial passenger grievance submission', 'PASSENGER')
     `).run(insertedId, now.toISOString());
+
+    // Dispatch SMS notification alert to Nodal Officer
+    db.prepare(`
+      INSERT INTO notifications (complaint_id, type, recipient, subject, message, sent_at)
+      VALUES (?, 'SMS', '+91 94470 12345 (Nodal Officer)', NULL, ?, ?)
+    `).run(
+      insertedId,
+      `[NEW GRIEVANCE LOGGED] Ticket ${refNum} (${data.category}) registered. Targeted SLA: ${slaHours}h.`,
+      now.toISOString()
+    );
+
+    // Dispatch Email notification alert to Depot Operations
+    db.prepare(`
+      INSERT INTO notifications (complaint_id, type, recipient, subject, message, sent_at)
+      VALUES (?, 'EMAIL', 'depot-grievance-unit@ksrtc.gov.in', ?, ?, ?)
+    `).run(
+      insertedId,
+      `[NEW TICKET REGISTERED] ${refNum} - ${data.category}`,
+      `Grievance Reference: ${refNum}\nCategory: ${data.category}\nRoute: ${data.route_id || 'General'}\nLocation: ${data.location || 'Unspecified'}\nDescription: ${data.description}\n\nSLA Resolution Target: ${new Date(slaDeadline).toLocaleString()}`,
+      now.toISOString()
+    );
   })();
 
   return getComplaintById(insertedId)!;
