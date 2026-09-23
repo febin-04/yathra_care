@@ -1,0 +1,34 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --background: #f8fafc;
+  --foreground: #0f172a;
+}
+
+body {
+  background-color: var(--background);
+  color: var(--foreground);
+  font-family: var(--font-public-sans), system-ui, -apple-system, sans-serif;
+}
+
+h1, h2, h3, h4, h5, h6, .font-heading, .font-stat {
+  font-family: var(--font-fraunces), Georgia, serif;
+}
+
+@keyframes preloaderProgress {
+  0% {
+    width: 0%;
+  }
+  60% {
+    width: 75%;
+  }
+  100% {
+    width: 100%;
+  }
+}
+
+.animate-preloaderProgress {
+  animation: preloaderProgress 1.1s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+}

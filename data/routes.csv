@@ -1,0 +1,9 @@
+id,name,depot_id
+RT-101,Trivandrum - Ernakulam Super Fast,DEP-01
+RT-102,Trivandrum - Nagercoil Town,DEP-01
+RT-201,Ernakulam - Kozhikode Swift Deluxe,DEP-02
+RT-202,Ernakulam - Munnar Hill Express,DEP-02
+RT-301,Kozhikode - Wayanad Ghat Bus,DEP-03
+RT-302,Kozhikode - Kannur Shuttle,DEP-03
+RT-401,Thrissur - Palakkad Highway Express,DEP-04
+RT-501,Kottayam - Kumily Malabar Fast,DEP-05

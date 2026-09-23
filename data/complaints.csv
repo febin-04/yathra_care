@@ -1,0 +1,5 @@
+reference_number,route_id,category,location,description,evidence_url,status,depot_id,created_at,sla_deadline,escalated
+GRV-20260923-1001,RT-101,Safety & Over-speeding,Attingal Bypass,Driver was rash driving near school zone and ignored red signal.,/uploads/ev1.jpg,PENDING,DEP-01,2026-09-23T10:00:00.000Z,2026-09-23T16:00:00.000Z,0
+GRV-20260923-1002,RT-201,Staff Misbehaviour & Ticket Overcharging,Aluva Stand,Conductor charged extra ₹20 for luggage and refused to give ticket receipt.,,RESOLVED,DEP-02,2026-09-22T14:30:00.000Z,2026-09-23T02:30:00.000Z,0
+GRV-20260923-1003,RT-301,Bus Hygiene & Broken Seats,Thamarassery Churam,Seat 14 window latch broken and water leaking inside bus during heavy rain.,,PENDING,DEP-03,2026-09-20T08:00:00.000Z,2026-09-22T08:00:00.000Z,1
+GRV-20260923-1004,RT-401,Schedule Delay & Trip Cancellation,Wadakkanchery,Morning 7:15 AM bus cancelled without prior announcement or refund info.,,IN_PROGRESS,DEP-04,2026-09-23T12:00:00.000Z,2026-09-24T12:00:00.000Z,0

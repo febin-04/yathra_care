@@ -1,0 +1,6 @@
+id,name,sla_hours
+CAT-01,Safety & Over-speeding,6
+CAT-02,Staff Misbehaviour & Ticket Overcharging,12
+CAT-03,Schedule Delay & Trip Cancellation,24
+CAT-04,Bus Hygiene & Broken Seats,48
+CAT-05,Luggage / Parcel Handling Issue,24
