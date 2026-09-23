@@ -66,6 +66,18 @@ export function initTables(db: Database.Database) {
     );
   `);
 
+  // Ensure newer columns exist if table was created with an older schema
+  try {
+    db.exec(`ALTER TABLE complaints ADD COLUMN parent_reference_number TEXT;`);
+  } catch (e) {
+    // Column already exists
+  }
+  try {
+    db.exec(`ALTER TABLE complaints ADD COLUMN is_duplicate INTEGER NOT NULL DEFAULT 0;`);
+  } catch (e) {
+    // Column already exists
+  }
+
   // Status History table
   db.exec(`
     CREATE TABLE IF NOT EXISTS status_history (
