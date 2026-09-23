@@ -46,9 +46,9 @@ export const Preloader: React.FC = () => {
         {/* Brand Logo & Name (Positioned JUST ABOVE the moving bus) */}
         <div className="flex flex-col items-center text-center space-y-2">
           <img
-            src="/logo-full-white.png"
+            src="/yathra-care-logo.png"
             alt="Yathra Care Logo"
-            className="h-32 sm:h-36 w-auto object-contain drop-shadow-xl"
+            className="h-24 sm:h-28 w-auto object-contain drop-shadow-xl"
           />
           <p className="text-xs sm:text-sm text-blue-200 font-medium tracking-wide">
             State Transport Passenger Grievance Portal
