@@ -1,16 +1,32 @@
 import Database from 'better-sqlite3';
 import path from 'path';
+import fs from 'fs';
 
-const DB_PATH = process.env.DATABASE_PATH || path.join(process.cwd(), 'aanavandi.db');
+const isVercel = process.env.VERCEL === '1';
+const DB_PATH =
+  process.env.DATABASE_PATH ||
+  (isVercel ? path.join('/tmp', 'aanavandi.db') : path.join(process.cwd(), 'aanavandi.db'));
 
 let dbInstance: Database.Database | null = null;
 
 export function getDb(): Database.Database {
   if (!dbInstance) {
+    const isNew = isVercel && !fs.existsSync(DB_PATH);
     dbInstance = new Database(DB_PATH);
-    dbInstance.pragma('journal_mode = WAL');
+    if (!isVercel) {
+      dbInstance.pragma('journal_mode = WAL');
+    }
     dbInstance.pragma('foreign_keys = ON');
     initTables(dbInstance);
+
+    if (isNew) {
+      try {
+        const { seedFromDataDir } = require('./seed');
+        seedFromDataDir();
+      } catch (e) {
+        console.error('Vercel auto-seed notice:', e);
+      }
+    }
   }
   return dbInstance;
 }
