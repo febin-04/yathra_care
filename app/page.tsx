@@ -111,11 +111,11 @@ export default function EntryPage() {
         <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,rgba(20,53,176,0.25),transparent_70%)] z-0 pointer-events-none" />
 
         {/* Centered Content Container */}
-        <div className="max-w-7xl w-full mx-auto px-6 lg:px-8 py-10 lg:py-12 relative z-10 space-y-8 flex-1 flex flex-col justify-center">
+        <div className="max-w-7xl w-full mx-auto px-6 lg:px-8 py-10 lg:py-12 relative z-10 space-y-10 flex-1 flex flex-col justify-center">
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
             {/* Left Content */}
             <div className="lg:col-span-7 space-y-5">
-              <h1 className="text-3xl lg:text-4xl xl:text-5xl font-black text-white tracking-tight leading-tight drop-shadow-md">
+              <h1 className="text-3xl lg:text-4xl xl:text-5xl font-heading text-white tracking-tight leading-tight drop-shadow-md">
                 Regular & Express Bus <br />
                 <span className="text-desktop-accent">Passenger Grievance Portal</span>
               </h1>
@@ -127,43 +127,41 @@ export default function EntryPage() {
 
             {/* Right Hero Action Card with Glassmorphism Frosted Glass */}
             <div className="lg:col-span-5 flex justify-center relative">
-              <div className="w-full max-w-sm rounded-3xl bg-[#082490]/30 backdrop-blur-xl border border-white/25 p-7 shadow-2xl space-y-5 text-center transition-all hover:scale-105 duration-300">
-                <div className="w-16 h-16 rounded-2xl bg-desktop-accent text-white flex items-center justify-center shadow-xl mx-auto">
-                  <FileText className="w-8 h-8" />
+              <div className="w-full max-w-sm rounded-3xl bg-[#082490]/40 backdrop-blur-xl border border-white/25 p-8 shadow-2xl space-y-6 text-center transition-all hover:scale-105 duration-300 flex flex-col items-center justify-center">
+                <div className="w-14 h-14 rounded-2xl bg-desktop-accent text-white flex items-center justify-center shadow-xl mb-1">
+                  <FileText className="w-7 h-7" />
                 </div>
 
                 <div>
-                  <h3 className="text-xl font-black text-white tracking-tight drop-shadow-sm">Have a Passenger Grievance?</h3>
+                  <h3 className="text-xl md:text-2xl font-heading text-white tracking-tight drop-shadow-sm">Have a Passenger Grievance?</h3>
                 </div>
 
                 {/* Primary Button: Drop Your Problem Here */}
                 <a
                   href="#form"
-                  className="w-full bg-desktop-accent hover:bg-desktop-accentHover text-white py-4 px-6 rounded-2xl font-black text-sm uppercase tracking-wide transition-all shadow-xl hover:shadow-2xl flex items-center justify-center space-x-2 cursor-pointer transform hover:scale-105 block text-center"
+                  className="w-full bg-desktop-accent hover:bg-desktop-accentHover text-white py-4 px-6 rounded-2xl font-black text-xs uppercase tracking-wider transition-all shadow-xl hover:shadow-2xl flex items-center justify-center space-x-2 cursor-pointer transform hover:scale-105 block text-center"
                 >
                   <Send className="w-4 h-4" />
-                  <span>Drop Your Problem Here</span>
+                  <span>DROP YOUR PROBLEM HERE</span>
                 </a>
-
-
               </div>
             </div>
           </div>
 
           {/* OVERLAPPING SEARCH / ENTRY PANEL (Frosted Glass Panel - Bus Visible Through) */}
-          <div className="pt-2 border-t border-white/20">
-            <div className="bg-white/20 backdrop-blur-xl text-white rounded-2xl p-4 lg:p-6 shadow-2xl border border-white/35">
+          <div>
+            <div className="bg-white/15 backdrop-blur-xl text-white rounded-3xl p-5 lg:p-6 shadow-2xl border border-white/25">
               <div className="grid grid-cols-1 md:grid-cols-12 gap-4 items-center">
                 {/* Mode 1: Quick Route Selection */}
-                <div className="md:col-span-6 space-y-1.5">
-                  <label className="block text-[11px] font-black text-white uppercase tracking-wider drop-shadow-sm">
-                    Lodge Complaint for Bus Route
+                <div className="md:col-span-5 space-y-2">
+                  <label className="block text-[11px] font-black text-white/90 uppercase tracking-widest drop-shadow-sm">
+                    LODGE COMPLAINT FOR BUS ROUTE
                   </label>
                   <form onSubmit={handleQuickRouteSubmit} className="flex gap-2">
                     <select
                       value={selectedQuickRoute}
                       onChange={(e) => setSelectedQuickRoute(e.target.value)}
-                      className="flex-1 bg-white/95 text-slate-900 border border-white/60 rounded-xl p-2.5 text-xs font-bold focus:outline-none focus:ring-2 focus:ring-desktop-accent shadow-sm"
+                      className="flex-1 bg-white text-slate-900 border border-white/40 rounded-2xl py-3 px-4 text-xs font-semibold focus:outline-none focus:ring-2 focus:ring-desktop-accent shadow-sm"
                     >
                       <option value="">-- Select Bus Route --</option>
                       {routesList.map((r) => (
@@ -172,33 +170,39 @@ export default function EntryPage() {
                         </option>
                       ))}
                     </select>
-                    <Button type="submit" variant="accent" size="sm">
-                      Go to Form
-                    </Button>
+                    <button
+                      type="submit"
+                      className="bg-desktop-accent hover:bg-desktop-accentHover text-white px-5 py-3 rounded-2xl text-xs font-black uppercase tracking-wider transition-all shadow-md shrink-0 cursor-pointer"
+                    >
+                      GO TO FORM
+                    </button>
                   </form>
                 </div>
 
                 {/* Divider */}
-                <div className="hidden md:flex md:col-span-1 justify-center items-center text-white/90 font-black text-xs drop-shadow-sm">
+                <div className="hidden md:flex md:col-span-2 justify-center items-center text-white/90 font-bold text-xs drop-shadow-sm">
                   OR
                 </div>
 
                 {/* Mode 2: Quick Reference Tracker */}
-                <div className="md:col-span-5 space-y-1.5">
-                  <label className="block text-[11px] font-black text-white uppercase tracking-wider drop-shadow-sm">
-                    Quick Track Reference Code
+                <div className="md:col-span-5 space-y-2">
+                  <label className="block text-[11px] font-black text-white/90 uppercase tracking-widest drop-shadow-sm">
+                    QUICK TRACK REFERENCE CODE
                   </label>
                   <form onSubmit={handleQuickSearch} className="flex gap-2">
                     <input
                       type="text"
                       value={searchRef}
                       onChange={(e) => setSearchRef(e.target.value)}
-                      placeholder="e.g. RT101-20260923-0001"
-                      className="flex-1 bg-white/95 text-slate-900 border border-white/60 rounded-xl px-3 py-2.5 text-xs font-mono focus:outline-none focus:ring-2 focus:ring-desktop-accent shadow-sm"
+                      placeholder="o. g.  R1101-28260922-0001"
+                      className="flex-1 bg-white text-slate-900 border border-white/40 rounded-2xl px-4 py-3 text-xs font-mono focus:outline-none focus:ring-2 focus:ring-desktop-accent shadow-sm placeholder:text-slate-400"
                     />
-                    <Button type="submit" variant="primary" size="sm">
+                    <button
+                      type="submit"
+                      className="bg-[#1231a2] hover:bg-desktop-hero text-white px-6 py-3 rounded-2xl text-xs font-bold transition-all shadow-md shrink-0 cursor-pointer"
+                    >
                       Track
-                    </Button>
+                    </button>
                   </form>
                 </div>
               </div>
