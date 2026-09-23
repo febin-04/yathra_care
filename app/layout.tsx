@@ -20,7 +20,7 @@ const hankenGrotesk = Hanken_Grotesk({
 });
 
 export const metadata: Metadata = {
-  title: 'Yathra Care - Passenger Grievance Reporting System',
+  title: 'Yathra Care',
   description: 'Offline-first passenger grievance registration and depot SLA management system',
   icons: {
     icon: [
