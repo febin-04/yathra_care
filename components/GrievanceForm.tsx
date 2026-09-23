@@ -226,6 +226,11 @@ export default function GrievanceForm({ initialRouteId }: GrievanceFormProps = {
       if (mobileStep !== 4) setMobileStep(4);
       return;
     }
+    if (!passengerEmail.trim()) {
+      setErrorMessage('Please enter your email address to receive your confirmation receipt & live status updates.');
+      if (mobileStep !== 4) setMobileStep(4);
+      return;
+    }
 
     setSubmitting(true);
     setErrorMessage(null);
@@ -763,10 +768,10 @@ export default function GrievanceForm({ initialRouteId }: GrievanceFormProps = {
                   <div>
                     <div className="flex justify-between items-center mb-1.5">
                       <label className="block text-xs font-extrabold text-slate-700 uppercase tracking-wider">
-                        6. Passenger Email (For Live Status & Receipts)
+                        6. Passenger Email <span className="text-rose-500">*</span>
                       </label>
                       <span className="text-[10px] font-bold text-sky-700 bg-sky-50 px-2 py-0.5 rounded border border-sky-200 flex items-center gap-1">
-                        <Mail className="w-3 h-3 text-sky-600" /> Automated Resend Notifications
+                        <Mail className="w-3 h-3 text-sky-600" /> Instant Email Confirmation
                       </span>
                     </div>
                     <div className="relative">
@@ -775,8 +780,9 @@ export default function GrievanceForm({ initialRouteId }: GrievanceFormProps = {
                         type="email"
                         value={passengerEmail}
                         onChange={(e) => setPassengerEmail(e.target.value)}
-                        placeholder="e.g. passenger@gmail.com (Optional - receive instant email receipts & status alerts)"
+                        placeholder="e.g. passenger@gmail.com (Required to receive email receipt)"
                         className="w-full bg-slate-50 border border-slate-300 text-slate-900 rounded-xl py-3 pl-10 pr-4 text-xs font-semibold focus:outline-none focus:ring-2 focus:ring-desktop-hero"
+                        required
                       />
                     </div>
                   </div>
@@ -1122,7 +1128,7 @@ export default function GrievanceForm({ initialRouteId }: GrievanceFormProps = {
                       {/* Passenger Email */}
                       <div>
                         <label className="block text-xs font-extrabold text-slate-700 uppercase tracking-wider mb-1">
-                          Passenger Email (Optional)
+                          Passenger Email <span className="text-rose-500">*</span>
                         </label>
                         <div className="relative">
                           <Mail className="w-4 h-4 text-mobile-header absolute left-3.5 top-3.5" />
@@ -1132,6 +1138,7 @@ export default function GrievanceForm({ initialRouteId }: GrievanceFormProps = {
                             onChange={(e) => setPassengerEmail(e.target.value)}
                             placeholder="Email address for live status updates..."
                             className="w-full bg-mobile-cardTint border border-mobile-border text-slate-900 rounded-2xl py-3 pl-10 pr-4 text-xs font-bold focus:outline-none focus:ring-2 focus:ring-mobile-header"
+                            required
                           />
                         </div>
                       </div>
