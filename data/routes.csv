@@ -1,9 +1,24 @@
 id,name,depot_id
 RT-101,Trivandrum - Ernakulam Super Fast,DEP-01
-RT-102,Trivandrum - Nagercoil Town,DEP-01
+RT-102,Trivandrum - Nagercoil Town Shuttle,DEP-01
+RT-103,Trivandrum - Kollam City Fast,DEP-01
+RT-104,Trivandrum - Ponmudi Hill Express,DEP-01
 RT-201,Ernakulam - Kozhikode Swift Deluxe,DEP-02
 RT-202,Ernakulam - Munnar Hill Express,DEP-02
+RT-203,Ernakulam - Alappuzha Coastal Shuttle,DEP-02
+RT-204,Ernakulam - Fort Kochi Metro Feeder,DEP-02
 RT-301,Kozhikode - Wayanad Ghat Bus,DEP-03
 RT-302,Kozhikode - Kannur Shuttle,DEP-03
+RT-303,Kozhikode - Malappuram Town Express,DEP-03
+RT-304,Kozhikode - Palakkad Night Rider,DEP-03
 RT-401,Thrissur - Palakkad Highway Express,DEP-04
+RT-402,Thrissur - Guruvayur Temple Special,DEP-04
+RT-403,Thrissur - Ernakulam Intercity,DEP-04
 RT-501,Kottayam - Kumily Malabar Fast,DEP-05
+RT-502,Kottayam - Pathanamthitta Sabarimala Route,DEP-05
+RT-601,Palakkad - Coimbatore Inter-State Express,DEP-06
+RT-602,Palakkad - Pollachi Border Shuttle,DEP-06
+RT-701,Kannur - Kasaragod Coastal Express,DEP-07
+RT-702,Kannur - Payyanur Town Route,DEP-07
+RT-801,Kollam - Punalur Agency Fast,DEP-08
+RT-802,Kollam - Thenmala Eco Circuit,DEP-08

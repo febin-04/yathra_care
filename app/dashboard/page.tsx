@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react';
 import DashboardTable from '@/components/DashboardTable';
 import ManagementDashboard from '@/components/ManagementDashboard';
-import { BarChart3, Table, ShieldCheck, Lock, Unlock, KeyRound, AlertCircle, X } from 'lucide-react';
+import { BarChart3, Table, ShieldCheck, Lock, Unlock, KeyRound, AlertCircle, X, Building2 } from 'lucide-react';
 
 export default function DashboardPage() {
   const [activeTab, setActiveTab] = useState<'MANAGEMENT' | 'OPERATIONS'>('MANAGEMENT');
@@ -11,6 +11,24 @@ export default function DashboardPage() {
   const [showAuthModal, setShowAuthModal] = useState<boolean>(false);
   const [passwordInput, setPasswordInput] = useState<string>('');
   const [authError, setAuthError] = useState<string>('');
+  const [depotsList, setDepotsList] = useState<{ id: string; name: string }[]>([]);
+  const [selectedDepotId, setSelectedDepotId] = useState<string>('');
+  const [authenticatedDepotId, setAuthenticatedDepotId] = useState<string>('');
+
+  useEffect(() => {
+    async function loadDepots() {
+      try {
+        const res = await fetch('/api/meta');
+        const data = await res.json();
+        if (data.success && data.data.depots) {
+          setDepotsList(data.data.depots);
+        }
+      } catch (e) {
+        console.error('Failed to load depots metadata', e);
+      }
+    }
+    loadDepots();
+  }, []);
 
   useEffect(() => {
     // Force password authentication on every page reload/refresh
@@ -39,6 +57,7 @@ export default function DashboardPage() {
     // Default passcodes: depot123 or admin2026
     if (passwordInput === 'depot123' || passwordInput === 'admin2026') {
       setIsAuthenticated(true);
+      setAuthenticatedDepotId(selectedDepotId);
       setShowAuthModal(false);
       setActiveTab('OPERATIONS');
       setAuthError('');
@@ -141,6 +160,28 @@ export default function DashboardPage() {
 
             <form onSubmit={handlePasswordSubmit} className="space-y-4">
               <div>
+                <label className="block text-xs font-bold text-slate-700 mb-1 flex items-center justify-between">
+                  <span>Select Station / Depot ID</span>
+                  <span className="text-[10px] text-slate-400 font-normal">Mapped to depot's buses</span>
+                </label>
+                <div className="relative">
+                  <Building2 className="w-4 h-4 text-slate-400 absolute left-3.5 top-3 pointer-events-none" />
+                  <select
+                    value={selectedDepotId}
+                    onChange={(e) => setSelectedDepotId(e.target.value)}
+                    className="w-full bg-slate-50 border border-slate-300 text-slate-900 rounded-xl py-2.5 pl-10 pr-4 text-xs font-semibold focus:ring-2 focus:ring-brand-500 outline-none cursor-pointer"
+                  >
+                    <option value="">All Depots (Regional HQ View)</option>
+                    {depotsList.map((d) => (
+                      <option key={d.id} value={d.id}>
+                        {d.id} — {d.name}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+              </div>
+
+              <div>
                 <label className="block text-xs font-bold text-slate-700 mb-1">
                   Enter Authority Passcode
                 </label>
@@ -188,7 +229,7 @@ export default function DashboardPage() {
       )}
 
       {/* Tab Content */}
-      {activeTab === 'MANAGEMENT' ? <ManagementDashboard /> : <DashboardTable />}
+      {activeTab === 'MANAGEMENT' ? <ManagementDashboard /> : <DashboardTable initialDepotId={authenticatedDepotId} />}
     </div>
   );
 }

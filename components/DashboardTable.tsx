@@ -16,7 +16,7 @@ import {
   ArrowRight,
 } from 'lucide-react';
 
-export default function DashboardTable() {
+export default function DashboardTable({ initialDepotId }: { initialDepotId?: string }) {
   const [complaints, setComplaints] = useState<Complaint[]>([]);
   const [depots, setDepots] = useState<Depot[]>([]);
   const [categories, setCategories] = useState<Category[]>([]);
@@ -24,7 +24,13 @@ export default function DashboardTable() {
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
 
   // Filters
-  const [selectedDepot, setSelectedDepot] = useState('');
+  const [selectedDepot, setSelectedDepot] = useState(initialDepotId || '');
+
+  useEffect(() => {
+    if (initialDepotId !== undefined) {
+      setSelectedDepot(initialDepotId);
+    }
+  }, [initialDepotId]);
   const [selectedCategory, setSelectedCategory] = useState('');
   const [selectedStatus, setSelectedStatus] = useState('');
   const [escalatedOnly, setEscalatedOnly] = useState(false);
@@ -182,6 +188,31 @@ export default function DashboardTable() {
           </div>
         </div>
       </div>
+
+      {/* Active Depot Filter Notice Banner */}
+      {selectedDepot && (
+        <div className="bg-brand-50 border border-brand-200 text-brand-900 rounded-2xl p-4 text-xs font-semibold flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 shadow-sm">
+          <div className="flex items-center space-x-2.5">
+            <div className="p-2 bg-brand-600 text-white rounded-xl shrink-0">
+              <Building2 className="w-4 h-4" />
+            </div>
+            <div>
+              <p className="font-extrabold text-sm text-brand-950">
+                Depot Scope: {depots.find((d) => d.id === selectedDepot)?.name || selectedDepot} ({selectedDepot})
+              </p>
+              <p className="text-[11px] text-brand-700 font-medium">
+                Filtering complaints received for buses and routes belonging to this depot.
+              </p>
+            </div>
+          </div>
+          <button
+            onClick={() => setSelectedDepot('')}
+            className="text-xs bg-white text-brand-700 border border-brand-300 hover:bg-brand-100 px-3 py-1.5 rounded-xl font-bold transition-all shrink-0"
+          >
+            Clear / View All Depots
+          </button>
+        </div>
+      )}
 
       {/* Control & Filter Panel */}
       <div className="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm space-y-4">
