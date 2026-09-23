@@ -9,8 +9,8 @@ const config: Config = {
   theme: {
     extend: {
       fontFamily: {
-        heading: ['var(--font-fraunces)', 'Georgia', 'serif'],
-        sans: ['var(--font-public-sans)', 'system-ui', 'sans-serif'],
+        heading: ['var(--font-lexend)', 'system-ui', 'sans-serif'],
+        sans: ['var(--font-hanken)', 'system-ui', 'sans-serif'],
       },
       colors: {
         // BRAND Fallback Palette

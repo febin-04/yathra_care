@@ -1,21 +1,21 @@
 import type { Metadata } from 'next';
-import { Fraunces, Public_Sans } from 'next/font/google';
+import { Lexend, Hanken_Grotesk } from 'next/font/google';
 import './globals.css';
 import Header from '@/components/Header';
 import BottomNav from '@/components/ui/BottomNav';
 import Preloader from '@/components/ui/Preloader';
 
-const fraunces = Fraunces({
+const lexend = Lexend({
   weight: ['500', '600'],
   subsets: ['latin'],
-  variable: '--font-fraunces',
+  variable: '--font-lexend',
   display: 'swap',
 });
 
-const publicSans = Public_Sans({
-  weight: ['400', '600'],
+const hankenGrotesk = Hanken_Grotesk({
+  weight: ['400', '500'],
   subsets: ['latin'],
-  variable: '--font-public-sans',
+  variable: '--font-hanken',
   display: 'swap',
 });
 
@@ -30,8 +30,8 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className={`${fraunces.variable} ${publicSans.variable}`}>
-      <body className={`${publicSans.className} bg-slate-50 text-slate-900 min-h-screen flex flex-col pb-16 md:pb-0`}>
+    <html lang="en" className={`${lexend.variable} ${hankenGrotesk.variable}`}>
+      <body className={`${hankenGrotesk.className} bg-slate-50 text-slate-900 min-h-screen flex flex-col pb-16 md:pb-0`}>
         <Preloader />
         <Header />
         <main className="flex-1 w-full">

@@ -10,11 +10,11 @@
 body {
   background-color: var(--background);
   color: var(--foreground);
-  font-family: var(--font-public-sans), system-ui, -apple-system, sans-serif;
+  font-family: var(--font-hanken), system-ui, -apple-system, sans-serif;
 }
 
 h1, h2, h3, h4, h5, h6, .font-heading, .font-stat {
-  font-family: var(--font-fraunces), Georgia, serif;
+  font-family: var(--font-lexend), system-ui, sans-serif;
 }
 
 /* ========================================================================= */
