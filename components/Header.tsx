@@ -60,19 +60,14 @@ export default function Header() {
     <header className="bg-slate-900 text-white shadow-2xl border-b border-slate-800 sticky top-0 z-50">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16">
-          {/* Brand Logo & Name (Native Line-Art Mark) */}
+          {/* Brand Logo & Name (Native White Transparent Logo) */}
           <Link href="/" className="flex items-center space-x-3 group">
             <img
-              src="/logo-icon-white.png"
-              alt="Yathra Care Logo Mark"
-              className="h-10 sm:h-11 w-auto object-contain group-hover:scale-105 transition-transform shrink-0"
+              src="/logo-full-white.png"
+              alt="Yathra Care Logo"
+              className="h-12 sm:h-13 w-auto object-contain group-hover:scale-105 transition-transform shrink-0"
             />
-            <div>
-              <div className="flex items-center gap-2">
-                <span className="font-black text-xl tracking-tight text-white uppercase font-heading">
-                  YATHRA CARE
-                </span>
-              </div>
+            <div className="hidden sm:block border-l border-white/20 pl-3">
               <p className="text-[11px] text-slate-300 font-semibold">Passenger Grievance Portal</p>
             </div>
           </Link>
