@@ -3,7 +3,7 @@ import { runEscalationEngine } from '@/lib/escalation';
 
 export async function POST() {
   try {
-    const result = runEscalationEngine();
+    const result = await runEscalationEngine();
     return NextResponse.json({
       success: true,
       message: `Escalation engine check complete. ${result.escalatedCount} complaints escalated.`,

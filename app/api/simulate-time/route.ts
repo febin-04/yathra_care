@@ -6,7 +6,7 @@ export async function POST(request: NextRequest) {
     const body = await request.json().catch(() => ({ hours: 12 }));
     const hours = body.hours || 12;
 
-    const result = simulateTimePassing(hours);
+    const result = await simulateTimePassing(hours);
     return NextResponse.json({
       success: true,
       message: `Simulated +${hours} hours passing. ${result.escalatedCount} grievances escalated!`,

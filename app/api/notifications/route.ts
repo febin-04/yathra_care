@@ -6,7 +6,7 @@ export async function GET(request: NextRequest) {
     const { searchParams } = new URL(request.url);
     const type = searchParams.get('type') || undefined;
 
-    const items = getNotifications(type);
+    const items = await getNotifications(type);
     return NextResponse.json({
       success: true,
       data: items,

@@ -141,8 +141,8 @@ export default function NotificationsPage() {
                 {item.subject && (
                   <div className="text-xs font-extrabold text-slate-900">{item.subject}</div>
                 )}
-                <div className="bg-slate-50 p-3 rounded-xl border border-slate-200 text-xs text-slate-800 font-mono leading-relaxed whitespace-pre-wrap">
-                  {item.message}
+                <div className="bg-slate-50 p-3.5 rounded-xl border border-slate-200 text-xs text-slate-800 font-mono leading-relaxed whitespace-pre-wrap">
+                  {(item.message || '').replace(/\\n/g, '\n')}
                 </div>
               </div>
             </div>
