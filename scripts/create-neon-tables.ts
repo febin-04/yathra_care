@@ -215,6 +215,59 @@ async function main() {
       }
       console.log(`✓ Seeded complaints from ${file}`);
     }
+
+    // Process Status History
+    for (const file of files.filter((f) => f.toLowerCase().includes('status_history'))) {
+      const records = parse(fs.readFileSync(path.join(dirPath, file), 'utf-8'), { columns: true, skip_empty_lines: true, trim: true });
+      for (const r of records) {
+        const ref = r.complaint_ref || r.reference_number;
+        const complaintRes = await sql`SELECT id FROM complaints WHERE reference_number = ${ref} LIMIT 1`;
+        if (complaintRes.length > 0) {
+          const complaintId = complaintRes[0].id;
+          await sql`
+            INSERT INTO status_history (complaint_id, from_status, to_status, changed_at, notes, changed_by)
+            VALUES (${complaintId}, ${r.from_status || null}, ${r.to_status}, ${r.changed_at || new Date().toISOString()}, ${r.notes || null}, ${r.changed_by || 'SYSTEM'});
+          `;
+        }
+      }
+      console.log(`✓ Seeded status_history from ${file}`);
+    }
+
+    // Process Feedback
+    for (const file of files.filter((f) => f.toLowerCase().includes('feedback'))) {
+      const records = parse(fs.readFileSync(path.join(dirPath, file), 'utf-8'), { columns: true, skip_empty_lines: true, trim: true });
+      for (const r of records) {
+        const ref = r.complaint_ref || r.reference_number;
+        const complaintRes = await sql`SELECT id FROM complaints WHERE reference_number = ${ref} LIMIT 1`;
+        if (complaintRes.length > 0) {
+          const complaintId = complaintRes[0].id;
+          const rating = parseInt(r.rating || '5', 10);
+          await sql`
+            INSERT INTO feedback (complaint_id, rating, comments, submitted_at)
+            VALUES (${complaintId}, ${rating}, ${r.comments || ''}, ${r.submitted_at || new Date().toISOString()})
+            ON CONFLICT (complaint_id) DO UPDATE SET rating = EXCLUDED.rating, comments = EXCLUDED.comments;
+          `;
+        }
+      }
+      console.log(`✓ Seeded feedback from ${file}`);
+    }
+
+    // Process Notifications
+    for (const file of files.filter((f) => f.toLowerCase().includes('notification'))) {
+      const records = parse(fs.readFileSync(path.join(dirPath, file), 'utf-8'), { columns: true, skip_empty_lines: true, trim: true });
+      for (const r of records) {
+        const ref = r.complaint_ref || r.reference_number;
+        const complaintRes = await sql`SELECT id FROM complaints WHERE reference_number = ${ref} LIMIT 1`;
+        if (complaintRes.length > 0) {
+          const complaintId = complaintRes[0].id;
+          await sql`
+            INSERT INTO notifications (complaint_id, type, recipient, subject, message, sent_at)
+            VALUES (${complaintId}, ${r.type || 'SMS'}, ${r.recipient}, ${r.subject || null}, ${r.message}, ${r.sent_at || new Date().toISOString()});
+          `;
+        }
+      }
+      console.log(`✓ Seeded notifications from ${file}`);
+    }
   }
 
   // Verification

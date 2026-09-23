@@ -1,0 +1,15 @@
+complaint_ref,from_status,to_status,changed_at,notes,changed_by
+GRV-20260923-1001,,SUBMITTED,2026-09-23T10:00:00.000Z,Initial passenger grievance submission,PASSENGER
+GRV-20260923-1001,SUBMITTED,ACKNOWLEDGED,2026-09-23T10:30:00.000Z,Acknowledged by Trivandrum Central Depot Control,DEPOT_ADMIN
+GRV-20260923-1001,ACKNOWLEDGED,PENDING,2026-09-23T11:15:00.000Z,Driver rash driving report assigned to Enforcement Squad 4,STATION_MASTER
+GRV-20260923-1002,,SUBMITTED,2026-09-22T14:30:00.000Z,Initial passenger grievance submission,PASSENGER
+GRV-20260923-1002,SUBMITTED,IN_PROGRESS,2026-09-22T16:00:00.000Z,Conductor summoned for inquiry at Aluva Stand,DEPOT_ADMIN
+GRV-20260923-1002,IN_PROGRESS,RESOLVED,2026-09-22T19:45:00.000Z,Refund of excess luggage fee issued to passenger & conductor warned,STATION_MASTER
+GRV-20260923-1003,,SUBMITTED,2026-09-20T08:00:00.000Z,Initial passenger grievance submission,PASSENGER
+GRV-20260923-1003,SUBMITTED,PENDING,2026-09-20T09:00:00.000Z,Assigned to Kozhikode Maintenance Depot for window latch repair,DEPOT_ADMIN
+GRV-20260923-1003,PENDING,ESCALATED,2026-09-22T08:00:00.000Z,SLA target breached (48h). Reassigned to Regional HQ Command for priority repair.,SLA_ENGINE
+GRV-20260923-1004,,SUBMITTED,2026-09-23T12:00:00.000Z,Initial passenger grievance submission,PASSENGER
+GRV-20260923-1004,SUBMITTED,IN_PROGRESS,2026-09-23T13:30:00.000Z,Investigating trip cancellation reason with Thrissur Station Master,DEPOT_ADMIN
+GRV-20260923-1005,,SUBMITTED,2026-09-23T14:00:00.000Z,Initial passenger grievance submission,PASSENGER
+GRV-20260923-1006,,SUBMITTED,2026-09-23T15:30:00.000Z,Initial passenger grievance submission,PASSENGER
+GRV-20260923-1006,SUBMITTED,PENDING,2026-09-23T16:00:00.000Z,Routed to Palakkad Border Enforcement Squad,DEPOT_ADMIN

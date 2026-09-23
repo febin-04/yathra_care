@@ -179,6 +179,74 @@ export function seedFromDataDir(dataDir?: string) {
           results.complaintsInserted++;
         }
       }
+
+      // 5. Status History check
+      else if (fileName.toLowerCase().includes('status_history')) {
+        const stmt = db.prepare(`
+          INSERT INTO status_history (complaint_id, from_status, to_status, changed_at, notes, changed_by)
+          VALUES (?, ?, ?, ?, ?, ?)
+        `);
+        for (const record of records) {
+          const ref = record.complaint_ref || record.reference_number;
+          const complaintRow = db.prepare(`SELECT id FROM complaints WHERE reference_number = ? LIMIT 1`).get(ref) as { id: number } | undefined;
+          if (complaintRow) {
+            stmt.run(
+              complaintRow.id,
+              record.from_status || null,
+              record.to_status,
+              record.changed_at || new Date().toISOString(),
+              record.notes || null,
+              record.changed_by || 'SYSTEM'
+            );
+          }
+        }
+      }
+
+      // 6. Feedback check
+      else if (fileName.toLowerCase().includes('feedback')) {
+        const stmt = db.prepare(`
+          INSERT INTO feedback (complaint_id, rating, comments, submitted_at)
+          VALUES (?, ?, ?, ?)
+          ON CONFLICT(complaint_id) DO UPDATE SET
+            rating = excluded.rating,
+            comments = excluded.comments
+        `);
+        for (const record of records) {
+          const ref = record.complaint_ref || record.reference_number;
+          const complaintRow = db.prepare(`SELECT id FROM complaints WHERE reference_number = ? LIMIT 1`).get(ref) as { id: number } | undefined;
+          if (complaintRow) {
+            const rating = parseInt(record.rating || '5', 10);
+            stmt.run(
+              complaintRow.id,
+              isNaN(rating) ? 5 : rating,
+              record.comments || '',
+              record.submitted_at || new Date().toISOString()
+            );
+          }
+        }
+      }
+
+      // 7. Notifications check
+      else if (fileName.toLowerCase().includes('notification')) {
+        const stmt = db.prepare(`
+          INSERT INTO notifications (complaint_id, type, recipient, subject, message, sent_at)
+          VALUES (?, ?, ?, ?, ?, ?)
+        `);
+        for (const record of records) {
+          const ref = record.complaint_ref || record.reference_number;
+          const complaintRow = db.prepare(`SELECT id FROM complaints WHERE reference_number = ? LIMIT 1`).get(ref) as { id: number } | undefined;
+          if (complaintRow) {
+            stmt.run(
+              complaintRow.id,
+              record.type || 'SMS',
+              record.recipient,
+              record.subject || null,
+              record.message,
+              record.sent_at || new Date().toISOString()
+            );
+          }
+        }
+      }
     };
 
     // Sort files to process dependencies first
@@ -188,7 +256,10 @@ export function seedFromDataDir(dataDir?: string) {
         if (name.includes('route')) return 2;
         if (name.includes('categor')) return 3;
         if (name.includes('complaint')) return 4;
-        return 5;
+        if (name.includes('status_history')) return 5;
+        if (name.includes('feedback')) return 6;
+        if (name.includes('notification')) return 7;
+        return 8;
       };
       return getScore(a) - getScore(b);
     });

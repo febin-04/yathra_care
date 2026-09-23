@@ -1,0 +1,5 @@
+complaint_ref,type,recipient,subject,message,sent_at
+GRV-20260923-1001,SMS,+91 94470 12345 (Nodal Officer),,[NEW GRIEVANCE LOGGED] Ticket GRV-20260923-1001 (Safety & Over-speeding) registered. Targeted SLA: 6h.,2026-09-23T10:00:00.000Z
+GRV-20260923-1001,EMAIL,depot-grievance-unit@ksrtc.gov.in,[NEW TICKET REGISTERED] GRV-20260923-1001 - Safety & Over-speeding,Grievance Reference: GRV-20260923-1001\nCategory: Safety & Over-speeding\nRoute: RT-101\nLocation: Attingal Bypass\nDescription: Driver was rash driving near school zone.,2026-09-23T10:00:00.000Z
+GRV-20260923-1002,SMS,+91 98470 55432 (Passenger),[TICKET RESOLVED],Your grievance GRV-20260923-1002 has been resolved by Aluva Depot Master. Refund processed.,2026-09-22T19:45:00.000Z
+GRV-20260923-1003,EMAIL,hq-escalation-unit@ksrtc.gov.in,[ESCALATION ALERT] SLA Breached for GRV-20260923-1003,Grievance Reference: GRV-20260923-1003\nCategory: Bus Hygiene & Broken Seats\nSLA Target Breached.\nAction Required: Auto-escalated to Regional Transport Command HQ.,2026-09-22T08:00:00.000Z
