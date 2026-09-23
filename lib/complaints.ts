@@ -5,6 +5,7 @@ import {
   validateTransition,
   getNextPossibleStates,
 } from './statusMachine';
+import { syncComplaintToNeon, syncStatusUpdateToNeon } from './neonSync';
 
 export interface Depot {
   id: string;
@@ -193,7 +194,24 @@ export function createComplaint(data: {
     );
   })();
 
-  return getComplaintById(insertedId)!;
+  const createdComplaint = getComplaintById(insertedId)!;
+
+  // Sync newly created complaint to Neon PostgreSQL
+  syncComplaintToNeon({
+    reference_number: createdComplaint.reference_number,
+    route_id: createdComplaint.route_id,
+    category: createdComplaint.category,
+    location: createdComplaint.location,
+    description: createdComplaint.description,
+    evidence_url: createdComplaint.evidence_url,
+    status: createdComplaint.status,
+    depot_id: createdComplaint.depot_id,
+    created_at: createdComplaint.created_at,
+    sla_deadline: createdComplaint.sla_deadline,
+    escalated: createdComplaint.escalated,
+  }).catch((e) => console.error('Async Neon sync error', e));
+
+  return createdComplaint;
 }
 
 export function getStatusHistory(complaintId: number): StatusHistoryItem[] {
@@ -285,7 +303,14 @@ export function transitionComplaintStatus(
     );
   })();
 
-  return getComplaintById(currentComplaint.id)!;
+  const updatedComplaint = getComplaintById(currentComplaint.id)!;
+
+  // Sync status transition to Neon PostgreSQL
+  syncStatusUpdateToNeon(updatedComplaint.reference_number, targetStatus, newEscalatedVal).catch((e) =>
+    console.error('Async Neon status sync error', e)
+  );
+
+  return updatedComplaint;
 }
 
 export function checkAndTriggerSLAEscalations(): number {
