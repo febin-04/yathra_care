@@ -88,50 +88,50 @@ export default function Header() {
                   }
                 }
               }}
-              className={`px-3 py-2 rounded-xl text-xs font-bold transition-all flex items-center space-x-1.5 ${
+              className={`hidden md:flex items-center space-x-1.5 px-3 py-2 rounded-xl text-xs font-bold transition-all ${
                 pathname === '/'
                   ? 'bg-desktop-hero text-white shadow-md font-black ring-1 ring-white/30'
                   : 'text-slate-200 hover:text-white hover:bg-slate-800'
               }`}
             >
               <FileText className="w-4 h-4 text-desktop-accent" />
-              <span className="hidden sm:inline">Report Grievance</span>
+              <span>Report Grievance</span>
             </Link>
 
             <Link
               href="/track"
-              className={`px-3 py-2 rounded-xl text-xs font-bold transition-all flex items-center space-x-1.5 ${
+              className={`hidden md:flex items-center space-x-1.5 px-3 py-2 rounded-xl text-xs font-bold transition-all ${
                 pathname.startsWith('/track')
                   ? 'bg-desktop-hero text-white shadow-md font-black ring-1 ring-white/30'
                   : 'text-slate-200 hover:text-white hover:bg-slate-800'
               }`}
             >
               <Search className="w-4 h-4 text-amber-400" />
-              <span className="hidden sm:inline">Track Status</span>
+              <span>Track Status</span>
             </Link>
 
             <Link
               href="/dashboard"
-              className={`px-3 py-2 rounded-xl text-xs font-bold transition-all flex items-center space-x-1.5 ${
+              className={`hidden md:flex items-center space-x-1.5 px-3 py-2 rounded-xl text-xs font-bold transition-all ${
                 pathname === '/dashboard'
                   ? 'bg-desktop-hero text-white shadow-md font-black ring-1 ring-white/30'
                   : 'text-slate-200 hover:text-white hover:bg-slate-800'
               }`}
             >
               <LayoutDashboard className="w-4 h-4 text-emerald-400" />
-              <span className="hidden sm:inline">Depot Dashboard</span>
+              <span>Depot Dashboard</span>
             </Link>
 
             <Link
               href="/help"
-              className={`px-3 py-2 rounded-xl text-xs font-bold transition-all flex items-center space-x-1.5 ${
+              className={`hidden md:flex items-center space-x-1.5 px-3 py-2 rounded-xl text-xs font-bold transition-all ${
                 pathname === '/help'
                   ? 'bg-desktop-hero text-white shadow-md font-black ring-1 ring-white/30'
                   : 'text-slate-200 hover:text-white hover:bg-slate-800'
               }`}
             >
               <HelpCircle className="w-4 h-4 text-indigo-400" />
-              <span className="hidden sm:inline">Help</span>
+              <span>Help</span>
             </Link>
 
             <Link
@@ -143,7 +143,7 @@ export default function Header() {
               }`}
             >
               <Bell className="w-4 h-4 text-blue-400" />
-              <span className="hidden sm:inline">Inbox</span>
+              <span className="hidden md:inline">Inbox</span>
             </Link>
 
             {/* Dev Action Buttons */}
