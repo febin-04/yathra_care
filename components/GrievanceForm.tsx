@@ -62,7 +62,14 @@ export default function GrievanceForm() {
   const [searchedComplaint, setSearchedComplaint] = useState<Complaint | null>(null);
   const [lookupError, setLookupError] = useState<string | null>(null);
 
-  const routeDropdownRef = useRef<HTMLDivElement>(null);
+  const desktopDropdownRef = useRef<HTMLDivElement>(null);
+  const mobileDropdownRef = useRef<HTMLDivElement>(null);
+
+  const handleSelectRoute = (id: string, name: string) => {
+    setSelectedRouteId(id);
+    setRouteQuery(id ? `${id} - ${name}` : '');
+    setShowRouteDropdown(false);
+  };
 
   // Helper to load offline queue count
   const updateOfflineCount = () => {
@@ -153,7 +160,10 @@ export default function GrievanceForm() {
 
   useEffect(() => {
     function handleClickOutside(event: MouseEvent) {
-      if (routeDropdownRef.current && !routeDropdownRef.current.contains(event.target as Node)) {
+      const target = event.target as Node;
+      const insideDesktop = desktopDropdownRef.current?.contains(target);
+      const insideMobile = mobileDropdownRef.current?.contains(target);
+      if (!insideDesktop && !insideMobile) {
         setShowRouteDropdown(false);
       }
     }
@@ -509,7 +519,7 @@ export default function GrievanceForm() {
 
                 <form onSubmit={handleSubmit} className="space-y-5">
                   {/* 1. Route / Bus Autocomplete */}
-                  <div className="relative" ref={routeDropdownRef}>
+                  <div className="relative" ref={desktopDropdownRef}>
                     <label className="block text-xs font-extrabold text-slate-700 uppercase tracking-wider mb-1.5">
                       1. Route / Bus Service
                     </label>
@@ -547,11 +557,11 @@ export default function GrievanceForm() {
                     {showRouteDropdown && (
                       <div className="absolute left-0 right-0 top-full mt-1 bg-white border border-slate-200 rounded-xl shadow-xl max-h-48 overflow-y-auto z-50 divide-y divide-slate-100">
                         <div
-                          onClick={() => {
-                            setSelectedRouteId('');
-                            setRouteQuery('');
-                            setShowRouteDropdown(false);
+                          onMouseDown={(e) => {
+                            e.preventDefault();
+                            handleSelectRoute('', '');
                           }}
+                          onClick={() => handleSelectRoute('', '')}
                           className="p-2.5 text-xs text-slate-500 hover:bg-slate-50 cursor-pointer font-medium"
                         >
                           -- Unspecified / General Route --
@@ -562,11 +572,11 @@ export default function GrievanceForm() {
                           filteredRoutes.map((rt) => (
                             <div
                               key={rt.id}
-                              onClick={() => {
-                                setSelectedRouteId(rt.id);
-                                setRouteQuery(`${rt.id} - ${rt.name}`);
-                                setShowRouteDropdown(false);
+                              onMouseDown={(e) => {
+                                e.preventDefault();
+                                handleSelectRoute(rt.id, rt.name);
                               }}
+                              onClick={() => handleSelectRoute(rt.id, rt.name)}
                               className={`p-3 text-xs hover:bg-desktop-bgTint cursor-pointer transition-colors flex justify-between items-center ${
                                 selectedRouteId === rt.id ? 'bg-desktop-bgTint font-bold text-desktop-hero' : 'text-slate-800'
                               }`}
@@ -835,7 +845,7 @@ export default function GrievanceForm() {
                       <p className="text-xs text-slate-500 font-medium">Which bus service was involved?</p>
                     </div>
 
-                    <div className="relative" ref={routeDropdownRef}>
+                    <div className="relative" ref={mobileDropdownRef}>
                       <div className="relative">
                         <Bus className="w-5 h-5 text-mobile-header absolute left-3.5 top-3.5" />
                         <input
@@ -877,20 +887,34 @@ export default function GrievanceForm() {
                       {/* Dropdown Options */}
                       {showRouteDropdown && (
                         <div className="mt-2 bg-white border border-mobile-border rounded-2xl shadow-xl max-h-52 overflow-y-auto divide-y divide-slate-100">
-                          {filteredRoutes.map((rt) => (
-                            <div
-                              key={rt.id}
-                              onClick={() => {
-                                setSelectedRouteId(rt.id);
-                                setRouteQuery(`${rt.id} - ${rt.name}`);
-                                setShowRouteDropdown(false);
-                              }}
-                              className="p-3 text-xs font-bold hover:bg-mobile-cardTint cursor-pointer flex justify-between"
-                            >
-                              <span className="text-mobile-header font-mono">{rt.id}</span>
-                              <span className="text-slate-800">{rt.name}</span>
-                            </div>
-                          ))}
+                          <div
+                            onMouseDown={(e) => {
+                              e.preventDefault();
+                              handleSelectRoute('', '');
+                            }}
+                            onClick={() => handleSelectRoute('', '')}
+                            className="p-2.5 text-xs text-slate-500 hover:bg-slate-50 cursor-pointer font-medium"
+                          >
+                            -- Unspecified / General Route --
+                          </div>
+                          {filteredRoutes.length === 0 ? (
+                            <div className="p-3 text-xs text-slate-400 text-center font-medium">No matching bus routes found</div>
+                          ) : (
+                            filteredRoutes.map((rt) => (
+                              <div
+                                key={rt.id}
+                                onMouseDown={(e) => {
+                                  e.preventDefault();
+                                  handleSelectRoute(rt.id, rt.name);
+                                }}
+                                onClick={() => handleSelectRoute(rt.id, rt.name)}
+                                className="p-3 text-xs font-bold hover:bg-mobile-cardTint cursor-pointer flex justify-between"
+                              >
+                                <span className="text-mobile-header font-mono">{rt.id}</span>
+                                <span className="text-slate-800">{rt.name}</span>
+                              </div>
+                            ))
+                          )}
                         </div>
                       )}
                     </div>
