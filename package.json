@@ -10,6 +10,8 @@
     "seed": "tsx scripts/seed.ts"
   },
   "dependencies": {
+    "@neon/config": "^1.7.3",
+    "@neon/env": "^1.4.4",
     "better-sqlite3": "^11.3.0",
     "clsx": "^2.1.1",
     "csv-parse": "^5.5.6",
