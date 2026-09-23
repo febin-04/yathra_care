@@ -1,4 +1,19 @@
 import { Resend } from 'resend';
+import nodemailer from 'nodemailer';
+
+function getNodemailerTransporter() {
+  const user = process.env.SMTP_USER || process.env.GMAIL_USER;
+  const pass = process.env.SMTP_PASS || process.env.GMAIL_PASS;
+  if (!user || !pass) return null;
+
+  return nodemailer.createTransport({
+    service: 'gmail',
+    auth: {
+      user: user.trim(),
+      pass: pass.trim(),
+    },
+  });
+}
 
 function getResendClient() {
   const apiKey = process.env.RESEND_API_KEY;
@@ -18,11 +33,7 @@ export async function sendGrievanceConfirmationEmail(data: {
   slaDeadline: string;
   routeName?: string;
 }) {
-  const resend = getResendClient();
-  if (!resend || !data.passengerEmail) {
-    console.log(`[Email Notice] Skipping email sending for ${data.referenceNumber}: Resend API key or email missing.`);
-    return;
-  }
+  if (!data.passengerEmail) return;
 
   const appUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://yathracare.vercel.app';
   const trackingLink = `${appUrl}/track/${data.referenceNumber}`;
@@ -31,7 +42,7 @@ export async function sendGrievanceConfirmationEmail(data: {
     timeStyle: 'short',
   });
 
-  const generateHtml = (intendedFor?: string) => `
+  const htmlContent = `
     <!DOCTYPE html>
     <html>
     <head>
@@ -49,7 +60,6 @@ export async function sendGrievanceConfirmationEmail(data: {
         .detail-label { font-weight: 600; color: #64748b; }
         .button { display: inline-block; background: #0284c7; color: #ffffff !important; font-weight: bold; padding: 12px 24px; border-radius: 8px; text-decoration: none; margin-top: 20px; text-align: center; }
         .footer { background: #f8fafc; padding: 16px 24px; text-align: center; font-size: 12px; color: #94a3b8; border-top: 1px solid #e2e8f0; }
-        .demo-notice { background: #fef3c7; border: 1px solid #f59e0b; padding: 10px 14px; border-radius: 8px; font-size: 12px; color: #78350f; margin-bottom: 16px; }
       </style>
     </head>
     <body>
@@ -59,7 +69,6 @@ export async function sendGrievanceConfirmationEmail(data: {
           <div class="badge">Grievance Confirmation</div>
         </div>
         <div class="body">
-          ${intendedFor ? `<div class="demo-notice">ℹ️ <strong>Resend Testing Mode:</strong> This confirmation email was intended for <strong>${intendedFor}</strong>. (Domain verification required in Resend for direct delivery to external emails).</div>` : ''}
           <p>Dear Passenger,</p>
           <p>Thank you for reaching out to KSRTC Yathra Care. Your grievance has been logged successfully into our central transport monitoring system.</p>
           
@@ -87,30 +96,53 @@ export async function sendGrievanceConfirmationEmail(data: {
     </html>
   `;
 
+  // 1. Try Gmail / Custom SMTP Transporter First if configured (Zero domain verification required!)
+  const transporter = getNodemailerTransporter();
+  if (transporter) {
+    try {
+      const senderUser = process.env.SMTP_USER || process.env.GMAIL_USER;
+      const mailRes = await transporter.sendMail({
+        from: `Yathra Care <${senderUser}>`,
+        to: data.passengerEmail,
+        subject: `[Yathra Care] Grievance Registered - Ticket #${data.referenceNumber}`,
+        html: htmlContent,
+      });
+      console.log(`[Gmail SMTP Success] Email sent directly to passenger ${data.passengerEmail} (MessageId: ${mailRes.messageId})`);
+      return mailRes;
+    } catch (err) {
+      console.error(`[Gmail SMTP Error] Failed to send via Gmail SMTP:`, err);
+    }
+  }
+
+  // 2. Fallback to Resend API
+  const resend = getResendClient();
+  if (!resend) {
+    console.log(`[Email Notice] Skipping email sending: Neither Gmail SMTP nor Resend API Key is set.`);
+    return;
+  }
+
   try {
     const response = await resend.emails.send({
       from: FROM_EMAIL,
       to: [data.passengerEmail],
       subject: `[Yathra Care] Grievance Registered - Ticket #${data.referenceNumber}`,
-      html: generateHtml(),
+      html: htmlContent,
     });
 
     if (response.error) {
       console.error(`[Resend API Notice] Could not send directly to ${data.passengerEmail}:`, response.error.message);
 
-      // If Resend sandbox blocks external email, auto-forward to project owner email so message is never lost!
       if (response.error.message?.includes('can only send testing emails') || response.error.statusCode === 403) {
-        console.log(`[Resend Sandbox Fallback] Auto-forwarding ticket #${data.referenceNumber} confirmation to ${OWNER_EMAIL}...`);
-        const fallbackRes = await resend.emails.send({
+        console.log(`[Resend Fallback] Forwarding receipt to project owner (${OWNER_EMAIL})...`);
+        return await resend.emails.send({
           from: FROM_EMAIL,
           to: [OWNER_EMAIL],
           subject: `[Yathra Care Receipt] Ticket #${data.referenceNumber} (For: ${data.passengerEmail})`,
-          html: generateHtml(data.passengerEmail),
+          html: htmlContent,
         });
-        return fallbackRes;
       }
     } else {
-      console.log(`[Resend Success] Grievance confirmation email sent to ${data.passengerEmail} (ID: ${response.data?.id})`);
+      console.log(`[Resend Success] Grievance confirmation email sent to ${data.passengerEmail}`);
     }
 
     return response;
@@ -126,8 +158,7 @@ export async function sendStatusUpdateEmail(data: {
   newStatus: string;
   notes?: string;
 }) {
-  const resend = getResendClient();
-  if (!resend || !data.passengerEmail) return;
+  if (!data.passengerEmail) return;
 
   const appUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://yathracare.vercel.app';
   const trackingLink = `${appUrl}/track/${data.referenceNumber}`;
@@ -137,7 +168,7 @@ export async function sendStatusUpdateEmail(data: {
   if (data.newStatus === 'REJECTED') statusBg = '#64748b';
   if (data.newStatus === 'ESCALATED') statusBg = '#e11d48';
 
-  const generateHtml = (intendedFor?: string) => `
+  const htmlContent = `
     <!DOCTYPE html>
     <html>
     <head>
@@ -152,7 +183,6 @@ export async function sendStatusUpdateEmail(data: {
         .notes-box { background: #f8fafc; border: 1px solid #cbd5e1; padding: 16px; border-radius: 8px; margin: 20px 0; font-size: 14px; }
         .button { display: inline-block; background: #0f172a; color: #ffffff !important; font-weight: bold; padding: 12px 24px; border-radius: 8px; text-decoration: none; margin-top: 16px; text-align: center; }
         .footer { background: #f8fafc; padding: 16px 24px; text-align: center; font-size: 12px; color: #94a3b8; border-top: 1px solid #e2e8f0; }
-        .demo-notice { background: #fef3c7; border: 1px solid #f59e0b; padding: 10px 14px; border-radius: 8px; font-size: 12px; color: #78350f; margin-bottom: 16px; }
       </style>
     </head>
     <body>
@@ -162,7 +192,6 @@ export async function sendStatusUpdateEmail(data: {
           <div class="status-badge">${data.newStatus}</div>
         </div>
         <div class="body">
-          ${intendedFor ? `<div class="demo-notice">ℹ️ <strong>Resend Testing Mode:</strong> This update email was intended for <strong>${intendedFor}</strong>.</div>` : ''}
           <p>Dear Passenger,</p>
           <p>The status of your grievance <strong>#${data.referenceNumber}</strong> (${data.category}) has been updated by KSRTC Depot Operations.</p>
           
@@ -192,29 +221,50 @@ export async function sendStatusUpdateEmail(data: {
     </html>
   `;
 
+  // 1. Try Gmail / Custom SMTP Transporter First
+  const transporter = getNodemailerTransporter();
+  if (transporter) {
+    try {
+      const senderUser = process.env.SMTP_USER || process.env.GMAIL_USER;
+      const mailRes = await transporter.sendMail({
+        from: `Yathra Care <${senderUser}>`,
+        to: data.passengerEmail,
+        subject: `[Yathra Care] Grievance #${data.referenceNumber} Updated: ${data.newStatus}`,
+        html: htmlContent,
+      });
+      console.log(`[Gmail SMTP Success] Status update sent to ${data.passengerEmail} (MessageId: ${mailRes.messageId})`);
+      return mailRes;
+    } catch (err) {
+      console.error(`[Gmail SMTP Error] Failed to send update via Gmail SMTP:`, err);
+    }
+  }
+
+  // 2. Fallback to Resend API
+  const resend = getResendClient();
+  if (!resend) return;
+
   try {
     const response = await resend.emails.send({
       from: FROM_EMAIL,
       to: [data.passengerEmail],
       subject: `[Yathra Care] Grievance #${data.referenceNumber} Updated: ${data.newStatus}`,
-      html: generateHtml(),
+      html: htmlContent,
     });
 
     if (response.error) {
       console.error(`[Resend API Notice] Could not send status update to ${data.passengerEmail}:`, response.error.message);
 
       if (response.error.message?.includes('can only send testing emails') || response.error.statusCode === 403) {
-        console.log(`[Resend Sandbox Fallback] Auto-forwarding status update for ticket #${data.referenceNumber} to ${OWNER_EMAIL}...`);
-        const fallbackRes = await resend.emails.send({
+        console.log(`[Resend Fallback] Forwarding status update to ${OWNER_EMAIL}...`);
+        return await resend.emails.send({
           from: FROM_EMAIL,
           to: [OWNER_EMAIL],
           subject: `[Yathra Care Update] Ticket #${data.referenceNumber} is ${data.newStatus} (For: ${data.passengerEmail})`,
-          html: generateHtml(data.passengerEmail),
+          html: htmlContent,
         });
-        return fallbackRes;
       }
     } else {
-      console.log(`[Resend Success] Status update email sent to ${data.passengerEmail} (ID: ${response.data?.id})`);
+      console.log(`[Resend Success] Status update email sent to ${data.passengerEmail}`);
     }
 
     return response;
