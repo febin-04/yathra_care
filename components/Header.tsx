@@ -60,10 +60,13 @@ export default function Header() {
     <header className="bg-slate-900 text-white shadow-2xl border-b border-slate-800 sticky top-0 z-50">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16">
-          {/* Brand Logo & Name (Native Transparent Logo Asset) */}
+          {/* Brand Logo & Name (SVG Logo Asset - Direct Insertion on Dark Navy Header) */}
           <Link href="/" className="flex items-center space-x-3 group py-1 shrink-0">
             <img
-              src="/yathra-care-logo.png"
+              src="/yathra-care-logo.svg"
+              onError={(e) => {
+                e.currentTarget.src = '/yathra-care-logo.png';
+              }}
               alt="Yathra Care Logo"
               className="h-8 sm:h-9 w-auto object-contain group-hover:scale-105 transition-transform shrink-0"
             />

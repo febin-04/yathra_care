@@ -1,0 +1,23 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 520 120" width="520" height="120">
+  <!-- Shield Icon with Road Path -->
+  <g transform="translate(10, 10)">
+    <!-- Shield Outer Frame -->
+    <path d="M 50 10 C 65 10, 85 20, 90 25 C 90 60, 75 85, 50 100 C 25 85, 10 60, 10 25 C 15 20, 35 10, 50 10 Z" 
+          fill="none" stroke="#FFFFFF" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"/>
+    
+    <!-- Curved Road Swooshes -->
+    <path d="M 18 68 C 35 34, 65 28, 86 28" 
+          fill="none" stroke="#FFFFFF" stroke-width="5" stroke-linecap="round"/>
+    <path d="M 24 82 C 40 46, 65 40, 86 40" 
+          fill="none" stroke="#FFFFFF" stroke-width="4.5" stroke-linecap="round"/>
+    <!-- Center dashed line -->
+    <path d="M 21 75 C 38 40, 65 34, 86 34" 
+          fill="none" stroke="#FFFFFF" stroke-width="2" stroke-dasharray="4,4" stroke-linecap="round"/>
+  </g>
+
+  <!-- YATHRA Text (White) -->
+  <text x="120" y="76" font-family="-apple-system, BlinkMacSystemFont, 'Public Sans', 'Segoe UI', Roboto, sans-serif" font-weight="900" font-size="52" fill="#FFFFFF" letter-spacing="3">YATHRA</text>
+
+  <!-- CARE Text (Vibrant Orange) -->
+  <text x="365" y="76" font-family="-apple-system, BlinkMacSystemFont, 'Public Sans', 'Segoe UI', Roboto, sans-serif" font-weight="900" font-size="52" fill="#fd8f49" letter-spacing="3">CARE</text>
+</svg>
