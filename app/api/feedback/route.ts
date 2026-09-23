@@ -14,7 +14,7 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const complaint = getComplaintById(reference_number);
+    const complaint = await getComplaintById(reference_number);
     if (!complaint) {
       return NextResponse.json({ success: false, error: 'Complaint not found' }, { status: 404 });
     }
@@ -26,15 +26,29 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const db = getDb();
-    db.prepare(`
-      INSERT INTO feedback (complaint_id, rating, comments, submitted_at)
-      VALUES (?, ?, ?, ?)
-      ON CONFLICT(complaint_id) DO UPDATE SET
-        rating = excluded.rating,
-        comments = excluded.comments,
-        submitted_at = excluded.submitted_at
-    `).run(complaint.id, rating, comments || null, new Date().toISOString());
+    const dbUrl = process.env.DATABASE_URL;
+    if (dbUrl) {
+      const { neon } = require('@neondatabase/serverless');
+      const sql = neon(dbUrl);
+      await sql`
+        INSERT INTO feedback (complaint_id, rating, comments, submitted_at)
+        VALUES (${complaint.id}, ${rating}, ${comments || null}, ${new Date().toISOString()})
+        ON CONFLICT(complaint_id) DO UPDATE SET
+          rating = EXCLUDED.rating,
+          comments = EXCLUDED.comments,
+          submitted_at = EXCLUDED.submitted_at;
+      `;
+    } else {
+      const db = getDb();
+      db.prepare(`
+        INSERT INTO feedback (complaint_id, rating, comments, submitted_at)
+        VALUES (?, ?, ?, ?)
+        ON CONFLICT(complaint_id) DO UPDATE SET
+          rating = excluded.rating,
+          comments = excluded.comments,
+          submitted_at = excluded.submitted_at
+      `).run(complaint.id, rating, comments || null, new Date().toISOString());
+    }
 
     return NextResponse.json({
       success: true,

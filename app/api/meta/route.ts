@@ -3,10 +3,10 @@ import { getAllCategories, getAllDepots, getAllRoutes, getDashboardStats } from 
 
 export async function GET() {
   try {
-    const depots = getAllDepots();
-    const routes = getAllRoutes();
-    const categories = getAllCategories();
-    const stats = getDashboardStats();
+    const depots = await getAllDepots();
+    const routes = await getAllRoutes();
+    const categories = await getAllCategories();
+    const stats = await getDashboardStats();
 
     return NextResponse.json({
       success: true,

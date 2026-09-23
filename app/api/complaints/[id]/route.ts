@@ -6,7 +6,7 @@ export async function GET(
   { params }: { params: { id: string } }
 ) {
   try {
-    const complaint = getComplaintById(params.id);
+    const complaint = await getComplaintById(params.id);
     if (!complaint) {
       return NextResponse.json({ success: false, error: 'Complaint not found' }, { status: 404 });
     }
@@ -29,7 +29,7 @@ export async function PATCH(
     const changedBy = body.changed_by || 'DEPOT_ADMIN';
     const notes = body.notes || `Status transitioned to ${body.status}`;
 
-    const updated = transitionComplaintStatus(params.id, body.status, changedBy, notes);
+    const updated = await transitionComplaintStatus(params.id, body.status, changedBy, notes);
     return NextResponse.json({ success: true, data: updated });
   } catch (error: any) {
     console.error('State Machine Transition Error:', error.message);

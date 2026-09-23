@@ -10,7 +10,7 @@ export async function GET(request: NextRequest) {
     const search = searchParams.get('search') || undefined;
     const escalatedOnly = searchParams.get('escalated') === 'true';
 
-    const complaints = getComplaints({ depot_id, status, category, search, escalatedOnly });
+    const complaints = await getComplaints({ depot_id, status, category, search, escalatedOnly });
     return NextResponse.json({ success: true, data: complaints });
   } catch (error) {
     console.error('Error fetching complaints:', error);
@@ -25,7 +25,7 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ success: false, error: 'Category and Description are required' }, { status: 400 });
     }
 
-    const newComplaint = createComplaint({
+    const newComplaint = await createComplaint({
       route_id: body.route_id,
       category: body.category,
       location: body.location,

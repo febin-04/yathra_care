@@ -1,4 +1,3 @@
-import Database from 'better-sqlite3';
 import path from 'path';
 import fs from 'fs';
 
@@ -7,10 +6,11 @@ const DB_PATH =
   process.env.DATABASE_PATH ||
   (isVercel ? path.join('/tmp', 'aanavandi.db') : path.join(process.cwd(), 'aanavandi.db'));
 
-let dbInstance: Database.Database | null = null;
+let dbInstance: any = null;
 
-export function getDb(): Database.Database {
+export function getDb(): any {
   if (!dbInstance) {
+    const Database = require('better-sqlite3');
     const isNew = isVercel && !fs.existsSync(DB_PATH);
     dbInstance = new Database(DB_PATH);
     if (!isVercel) {
@@ -31,7 +31,7 @@ export function getDb(): Database.Database {
   return dbInstance;
 }
 
-export function initTables(db: Database.Database) {
+export function initTables(db: any) {
   // Depots table
   db.exec(`
     CREATE TABLE IF NOT EXISTS depots (

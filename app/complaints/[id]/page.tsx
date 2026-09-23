@@ -3,8 +3,8 @@ import { notFound } from 'next/navigation';
 import Link from 'next/link';
 import { ArrowLeft, Clock, MapPin, Building2, AlertTriangle, CheckCircle2 } from 'lucide-react';
 
-export default function ComplaintDetailPage({ params }: { params: { id: string } }) {
-  const complaint = getComplaintById(params.id);
+export default async function ComplaintDetailPage({ params }: { params: { id: string } }) {
+  const complaint = await getComplaintById(params.id);
 
   if (!complaint) {
     notFound();
