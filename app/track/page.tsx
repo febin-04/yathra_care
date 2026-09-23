@@ -37,8 +37,11 @@ function TrackContent() {
     setError(null);
     setComplaint(null);
 
+    // Sanitize leading row numbers, quotes, or symbols (e.g. "1 GRV-...", "#GRV-...")
+    const cleanRef = ref.trim().replace(/^#?\s*\d+[\s.-]+(?=GRV)/i, '').replace(/^#/i, '').trim();
+
     try {
-      const res = await fetch(`/api/complaints/${encodeURIComponent(ref.trim())}`);
+      const res = await fetch(`/api/complaints/${encodeURIComponent(cleanRef || ref.trim())}`);
       const data = await res.json();
       if (data.success) {
         setComplaint(data.data);

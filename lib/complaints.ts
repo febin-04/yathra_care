@@ -205,6 +205,15 @@ export function getStatusHistory(complaintId: number): StatusHistoryItem[] {
 
 export function getComplaintById(id: number | string): Complaint | null {
   const db = getDb();
+  let cleanId = String(id).trim();
+
+  // Strip leading row numbers or symbols (e.g. "1 GRV-...", "1. GRV-...", "#GRV-...")
+  cleanId = cleanId.replace(/^#?\s*\d+[\s.-]+(?=GRV)/i, '').replace(/^#/i, '').trim();
+
+  // Extract embedded GRV-XXXXX pattern if present
+  const grvMatch = cleanId.match(/GRV-[A-Za-z0-9-]+/i);
+  const targetRef = grvMatch ? grvMatch[0].toUpperCase() : cleanId;
+
   const query = `
     SELECT 
       c.*,
@@ -213,9 +222,13 @@ export function getComplaintById(id: number | string): Complaint | null {
     FROM complaints c
     LEFT JOIN routes r ON c.route_id = r.id
     LEFT JOIN depots d ON c.depot_id = d.id
-    WHERE c.id = ? OR c.reference_number = ?
+    WHERE c.id = ? 
+       OR LOWER(c.reference_number) = LOWER(?)
+       OR LOWER(c.reference_number) = LOWER(?)
+       OR c.reference_number LIKE ?
+    LIMIT 1
   `;
-  const record = db.prepare(query).get(id, id) as (Complaint & { status: string }) | undefined;
+  const record = db.prepare(query).get(cleanId, cleanId, targetRef, `%${targetRef}%`) as (Complaint & { status: string }) | undefined;
   if (!record) return null;
 
   record.status = normalizeStatus(record.status);
