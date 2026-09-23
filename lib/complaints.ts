@@ -6,6 +6,7 @@ import {
   validateTransition,
   getNextPossibleStates,
 } from './statusMachine';
+import { sendGrievanceConfirmationEmail, sendStatusUpdateEmail } from './email';
 
 export interface Depot {
   id: string;
@@ -50,6 +51,7 @@ export interface Complaint {
   escalated: number; // 0 or 1
   parent_reference_number?: string | null;
   is_duplicate?: number;
+  passenger_email?: string | null;
   route_name?: string;
   depot_name?: string;
   status_history?: StatusHistoryItem[];
@@ -206,6 +208,7 @@ export async function createComplaint(data: {
   description: string;
   evidence_url?: string;
   depot_id?: string;
+  passenger_email?: string;
 }): Promise<Complaint> {
   const sql = getNeonSql();
   let finalDepotId = data.depot_id || null;
@@ -251,7 +254,7 @@ export async function createComplaint(data: {
       INSERT INTO complaints (
         reference_number, route_id, category, location, description,
         evidence_url, status, depot_id, created_at, sla_deadline, escalated,
-        parent_reference_number, is_duplicate
+        parent_reference_number, is_duplicate, passenger_email
       ) VALUES (
         ${refNum},
         ${data.route_id || null},
@@ -265,7 +268,8 @@ export async function createComplaint(data: {
         ${slaDeadline},
         0,
         ${parentRef},
-        ${isDuplicate}
+        ${isDuplicate},
+        ${data.passenger_email || null}
       )
       RETURNING id;
     `;
@@ -288,6 +292,19 @@ export async function createComplaint(data: {
     `;
 
     const createdComplaint = await getComplaintById(insertedId);
+
+    if (createdComplaint?.passenger_email) {
+      sendGrievanceConfirmationEmail({
+        passengerEmail: createdComplaint.passenger_email,
+        referenceNumber: createdComplaint.reference_number,
+        category: createdComplaint.category,
+        description: createdComplaint.description,
+        location: createdComplaint.location || undefined,
+        slaDeadline: createdComplaint.sla_deadline,
+        routeName: createdComplaint.route_name,
+      }).catch((e) => console.error('[Resend Error] Confirmation email dispatch failed:', e));
+    }
+
     return createdComplaint!;
   }
 
@@ -340,8 +357,8 @@ export async function createComplaint(data: {
       INSERT INTO complaints (
         reference_number, route_id, category, location, description,
         evidence_url, status, depot_id, created_at, sla_deadline, escalated,
-        parent_reference_number, is_duplicate
-      ) VALUES (?, ?, ?, ?, ?, ?, 'SUBMITTED', ?, ?, ?, 0, ?, ?)
+        parent_reference_number, is_duplicate, passenger_email
+      ) VALUES (?, ?, ?, ?, ?, ?, 'SUBMITTED', ?, ?, ?, 0, ?, ?, ?)
     `);
 
     const result = stmt.run(
@@ -355,7 +372,8 @@ export async function createComplaint(data: {
       now.toISOString(),
       slaDeadline,
       parentRef,
-      isDuplicate
+      isDuplicate,
+      data.passenger_email || null
     );
 
     insertedId = result.lastInsertRowid as number;
@@ -386,6 +404,19 @@ export async function createComplaint(data: {
   })();
 
   const createdComplaint = await getComplaintById(insertedId);
+
+  if (createdComplaint?.passenger_email) {
+    sendGrievanceConfirmationEmail({
+      passengerEmail: createdComplaint.passenger_email,
+      referenceNumber: createdComplaint.reference_number,
+      category: createdComplaint.category,
+      description: createdComplaint.description,
+      location: createdComplaint.location || undefined,
+      slaDeadline: createdComplaint.sla_deadline,
+      routeName: createdComplaint.route_name,
+    }).catch((e) => console.error('[Resend Error] Confirmation email dispatch failed:', e));
+  }
+
   return createdComplaint!;
 }
 
@@ -430,6 +461,17 @@ export async function transitionComplaintStatus(
     `;
 
     const updatedComplaint = await getComplaintById(currentComplaint.id);
+
+    if (updatedComplaint?.passenger_email) {
+      sendStatusUpdateEmail({
+        passengerEmail: updatedComplaint.passenger_email,
+        referenceNumber: updatedComplaint.reference_number,
+        category: updatedComplaint.category,
+        newStatus: targetStatus,
+        notes: transitionNotes,
+      }).catch((e) => console.error('[Resend Error] Status update email dispatch failed:', e));
+    }
+
     return updatedComplaint!;
   }
 
@@ -455,6 +497,17 @@ export async function transitionComplaintStatus(
   })();
 
   const updatedComplaint = await getComplaintById(currentComplaint.id);
+
+  if (updatedComplaint?.passenger_email) {
+    sendStatusUpdateEmail({
+      passengerEmail: updatedComplaint.passenger_email,
+      referenceNumber: updatedComplaint.reference_number,
+      category: updatedComplaint.category,
+      newStatus: targetStatus,
+      notes: transitionNotes,
+    }).catch((e) => console.error('[Resend Error] Status update email dispatch failed:', e));
+  }
+
   return updatedComplaint!;
 }
 

@@ -77,6 +77,7 @@ export function initTables(db: any) {
       escalated INTEGER NOT NULL DEFAULT 0,
       parent_reference_number TEXT,
       is_duplicate INTEGER NOT NULL DEFAULT 0,
+      passenger_email TEXT,
       FOREIGN KEY (route_id) REFERENCES routes(id) ON DELETE SET NULL,
       FOREIGN KEY (depot_id) REFERENCES depots(id) ON DELETE SET NULL
     );
@@ -90,6 +91,11 @@ export function initTables(db: any) {
   }
   try {
     db.exec(`ALTER TABLE complaints ADD COLUMN is_duplicate INTEGER NOT NULL DEFAULT 0;`);
+  } catch (e) {
+    // Column already exists
+  }
+  try {
+    db.exec(`ALTER TABLE complaints ADD COLUMN passenger_email TEXT;`);
   } catch (e) {
     // Column already exists
   }

@@ -32,6 +32,7 @@ export async function POST(request: NextRequest) {
       description: body.description,
       evidence_url: body.evidence_url,
       depot_id: body.depot_id,
+      passenger_email: body.passenger_email,
     });
 
     return NextResponse.json({ success: true, data: newComplaint }, { status: 201 });

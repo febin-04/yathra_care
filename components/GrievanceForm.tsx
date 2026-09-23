@@ -25,6 +25,7 @@ import {
   RefreshCw,
   Sparkles,
   ArrowRight,
+  Mail,
 } from 'lucide-react';
 import { classifyDescriptionLocal } from '@/lib/classifier';
 import Link from 'next/link';
@@ -43,13 +44,13 @@ export default function GrievanceForm({ initialRouteId }: GrievanceFormProps = {
   const [selectedRouteId, setSelectedRouteId] = useState('');
   const [routeQuery, setRouteQuery] = useState('');
   const [showRouteDropdown, setShowRouteDropdown] = useState(false);
-
   const [selectedCategory, setSelectedCategory] = useState('');
   const [showCategoryDropdown, setShowCategoryDropdown] = useState(false);
   const [location, setLocation] = useState('');
   const [description, setDescription] = useState('');
   const [evidenceFileName, setEvidenceFileName] = useState('');
   const [evidenceUrl, setEvidenceUrl] = useState('');
+  const [passengerEmail, setPassengerEmail] = useState('');
 
   // Mobile Step Wizard State (1: Route, 2: Category, 3: Location, 4: Description & Evidence)
   const [mobileStep, setMobileStep] = useState(1);
@@ -236,6 +237,7 @@ export default function GrievanceForm({ initialRouteId }: GrievanceFormProps = {
       description,
       evidence_url: evidenceUrl || undefined,
       depot_id: mappedDepotObj?.id || undefined,
+      passenger_email: passengerEmail || undefined,
     };
 
     // Check if offline
@@ -756,6 +758,28 @@ export default function GrievanceForm({ initialRouteId }: GrievanceFormProps = {
                       </div>
                     </div>
                   </div>
+
+                  {/* 6. Passenger Email */}
+                  <div>
+                    <div className="flex justify-between items-center mb-1.5">
+                      <label className="block text-xs font-extrabold text-slate-700 uppercase tracking-wider">
+                        6. Passenger Email (For Live Status & Receipts)
+                      </label>
+                      <span className="text-[10px] font-bold text-sky-700 bg-sky-50 px-2 py-0.5 rounded border border-sky-200 flex items-center gap-1">
+                        <Mail className="w-3 h-3 text-sky-600" /> Automated Resend Notifications
+                      </span>
+                    </div>
+                    <div className="relative">
+                      <Mail className="w-4 h-4 text-slate-400 absolute left-3.5 top-3.5" />
+                      <input
+                        type="email"
+                        value={passengerEmail}
+                        onChange={(e) => setPassengerEmail(e.target.value)}
+                        placeholder="e.g. passenger@gmail.com (Optional - receive instant email receipts & status alerts)"
+                        className="w-full bg-slate-50 border border-slate-300 text-slate-900 rounded-xl py-3 pl-10 pr-4 text-xs font-semibold focus:outline-none focus:ring-2 focus:ring-desktop-hero"
+                      />
+                    </div>
+                  </div>
                 </form>
               </div>
 
@@ -1092,6 +1116,23 @@ export default function GrievanceForm({ initialRouteId }: GrievanceFormProps = {
                           <span className="text-xs font-bold text-slate-700">
                             {evidenceFileName ? evidenceFileName : 'Attach Ticket / Photo Evidence'}
                           </span>
+                        </div>
+                      </div>
+
+                      {/* Passenger Email */}
+                      <div>
+                        <label className="block text-xs font-extrabold text-slate-700 uppercase tracking-wider mb-1">
+                          Passenger Email (Optional)
+                        </label>
+                        <div className="relative">
+                          <Mail className="w-4 h-4 text-mobile-header absolute left-3.5 top-3.5" />
+                          <input
+                            type="email"
+                            value={passengerEmail}
+                            onChange={(e) => setPassengerEmail(e.target.value)}
+                            placeholder="Email address for live status updates..."
+                            className="w-full bg-mobile-cardTint border border-mobile-border text-slate-900 rounded-2xl py-3 pl-10 pr-4 text-xs font-bold focus:outline-none focus:ring-2 focus:ring-mobile-header"
+                          />
                         </div>
                       </div>
                     </div>
