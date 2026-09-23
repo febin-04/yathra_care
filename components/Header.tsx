@@ -2,36 +2,13 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { Bus, FileText, LayoutDashboard, RefreshCw, Bell, FastForward, Search, HelpCircle } from 'lucide-react';
+import { Bus, FileText, LayoutDashboard, Bell, FastForward, Search, HelpCircle } from 'lucide-react';
 import { useState } from 'react';
 
 export default function Header() {
   const pathname = usePathname();
-  const [reseeding, setReseeding] = useState(false);
   const [simulating, setSimulating] = useState(false);
   const [systemMessage, setSystemMessage] = useState<string | null>(null);
-
-  const handleReseed = async () => {
-    if (!confirm('Are you sure you want to reseed the database from /data/*.csv? Existing record updates will be merged.')) {
-      return;
-    }
-    setReseeding(true);
-    setSystemMessage(null);
-    try {
-      const res = await fetch('/api/seed', { method: 'POST' });
-      const data = await res.json();
-      if (data.success) {
-        setSystemMessage('Reseeded database successfully!');
-        setTimeout(() => window.location.reload(), 1000);
-      } else {
-        alert('Reseed failed: ' + data.error);
-      }
-    } catch (err) {
-      alert('Reseed error occurred.');
-    } finally {
-      setReseeding(false);
-    }
-  };
 
   const handleSimulateTime = async () => {
     setSimulating(true);
@@ -155,16 +132,6 @@ export default function Header() {
             >
               <FastForward className={`w-3.5 h-3.5 ${simulating ? 'animate-bounce' : ''}`} />
               <span className="hidden md:inline">{simulating ? '+12h...' : '+12h SLA'}</span>
-            </button>
-
-            <button
-              onClick={handleReseed}
-              disabled={reseeding}
-              title="Reseed database from /data/*.csv"
-              className="px-3 py-2 rounded-xl text-xs font-bold bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 transition-all flex items-center space-x-1 disabled:opacity-50 cursor-pointer"
-            >
-              <RefreshCw className={`w-3.5 h-3.5 ${reseeding ? 'animate-spin text-desktop-accent' : ''}`} />
-              <span className="hidden lg:inline">{reseeding ? 'Reseeding...' : 'Reseed CSV'}</span>
             </button>
           </nav>
         </div>
