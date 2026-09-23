@@ -13,10 +13,14 @@ export default function DashboardPage() {
   const [authError, setAuthError] = useState<string>('');
 
   useEffect(() => {
-    // Check if previously authenticated in this session
-    const savedAuth = sessionStorage.getItem('depot_auth');
-    if (savedAuth === 'true') {
-      setIsAuthenticated(true);
+    // Force password authentication on every page reload/refresh
+    if (typeof window !== 'undefined') {
+      sessionStorage.removeItem('depot_auth');
+      const params = new URLSearchParams(window.location.search);
+      if (params.get('tab') === 'operations') {
+        setActiveTab('OPERATIONS');
+        setShowAuthModal(true);
+      }
     }
   }, []);
 
@@ -35,7 +39,6 @@ export default function DashboardPage() {
     // Default passcodes: depot123 or admin2026
     if (passwordInput === 'depot123' || passwordInput === 'admin2026') {
       setIsAuthenticated(true);
-      sessionStorage.setItem('depot_auth', 'true');
       setShowAuthModal(false);
       setActiveTab('OPERATIONS');
       setAuthError('');
@@ -46,7 +49,9 @@ export default function DashboardPage() {
 
   const handleLogout = () => {
     setIsAuthenticated(false);
-    sessionStorage.removeItem('depot_auth');
+    if (typeof window !== 'undefined') {
+      sessionStorage.removeItem('depot_auth');
+    }
     setActiveTab('MANAGEMENT');
   };
 
