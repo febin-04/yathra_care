@@ -140,7 +140,7 @@ export default function Header() {
               }`}
             >
               <Bell className="w-4 h-4 text-blue-400" />
-              <span className="hidden sm:inline">Mock Inbox</span>
+              <span className="hidden sm:inline">Inbox</span>
             </Link>
 
             {/* Dev Action Buttons */}

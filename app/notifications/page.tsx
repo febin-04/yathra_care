@@ -36,7 +36,7 @@ export default function NotificationsPage() {
         <div>
           <div className="flex items-center space-x-2">
             <Bell className="w-6 h-6 text-brand-300" />
-            <h1 className="text-2xl font-black text-white">Mock Dispatch Inbox</h1>
+            <h1 className="text-2xl font-black text-white">Dispatch Inbox</h1>
           </div>
           <p className="text-xs text-brand-100 mt-1">
             Automated SMS & Email alerts dispatched by the SLA Escalation Engine to Depot Officers & HQ Oversight.
