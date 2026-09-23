@@ -294,7 +294,7 @@ export async function createComplaint(data: {
     const createdComplaint = await getComplaintById(insertedId);
 
     if (createdComplaint?.passenger_email) {
-      sendGrievanceConfirmationEmail({
+      await sendGrievanceConfirmationEmail({
         passengerEmail: createdComplaint.passenger_email,
         referenceNumber: createdComplaint.reference_number,
         category: createdComplaint.category,
@@ -302,7 +302,7 @@ export async function createComplaint(data: {
         location: createdComplaint.location || undefined,
         slaDeadline: createdComplaint.sla_deadline,
         routeName: createdComplaint.route_name,
-      }).catch((e) => console.error('[Resend Error] Confirmation email dispatch failed:', e));
+      }).catch((e) => console.error('[Email Error] Confirmation email dispatch failed:', e));
     }
 
     return createdComplaint!;
@@ -406,7 +406,7 @@ export async function createComplaint(data: {
   const createdComplaint = await getComplaintById(insertedId);
 
   if (createdComplaint?.passenger_email) {
-    sendGrievanceConfirmationEmail({
+    await sendGrievanceConfirmationEmail({
       passengerEmail: createdComplaint.passenger_email,
       referenceNumber: createdComplaint.reference_number,
       category: createdComplaint.category,
@@ -414,7 +414,7 @@ export async function createComplaint(data: {
       location: createdComplaint.location || undefined,
       slaDeadline: createdComplaint.sla_deadline,
       routeName: createdComplaint.route_name,
-    }).catch((e) => console.error('[Resend Error] Confirmation email dispatch failed:', e));
+    }).catch((e) => console.error('[Email Error] Confirmation email dispatch failed:', e));
   }
 
   return createdComplaint!;
@@ -463,13 +463,13 @@ export async function transitionComplaintStatus(
     const updatedComplaint = await getComplaintById(currentComplaint.id);
 
     if (updatedComplaint?.passenger_email) {
-      sendStatusUpdateEmail({
+      await sendStatusUpdateEmail({
         passengerEmail: updatedComplaint.passenger_email,
         referenceNumber: updatedComplaint.reference_number,
         category: updatedComplaint.category,
         newStatus: targetStatus,
         notes: transitionNotes,
-      }).catch((e) => console.error('[Resend Error] Status update email dispatch failed:', e));
+      }).catch((e) => console.error('[Email Error] Status update email dispatch failed:', e));
     }
 
     return updatedComplaint!;
@@ -499,13 +499,13 @@ export async function transitionComplaintStatus(
   const updatedComplaint = await getComplaintById(currentComplaint.id);
 
   if (updatedComplaint?.passenger_email) {
-    sendStatusUpdateEmail({
+    await sendStatusUpdateEmail({
       passengerEmail: updatedComplaint.passenger_email,
       referenceNumber: updatedComplaint.reference_number,
       category: updatedComplaint.category,
       newStatus: targetStatus,
       notes: transitionNotes,
-    }).catch((e) => console.error('[Resend Error] Status update email dispatch failed:', e));
+    }).catch((e) => console.error('[Email Error] Status update email dispatch failed:', e));
   }
 
   return updatedComplaint!;
