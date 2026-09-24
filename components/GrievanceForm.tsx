@@ -38,7 +38,7 @@ interface GrievanceFormProps {
 }
 
 export default function GrievanceForm({ initialRouteId }: GrievanceFormProps = {}) {
-  const { t } = useLanguage();
+  const { t, tCat } = useLanguage();
   const [routes, setRoutes] = useState<Route[]>([]);
   const [categories, setCategories] = useState<Category[]>([]);
   const [depots, setDepots] = useState<Depot[]>([]);
@@ -578,7 +578,7 @@ export default function GrievanceForm({ initialRouteId }: GrievanceFormProps = {
               <div className="lg:col-span-7 bg-white rounded-3xl p-8 shadow-xl border border-slate-200 space-y-6">
                 <div className="border-b border-slate-100 pb-4">
                   <span className="text-[11px] font-black uppercase tracking-widest text-desktop-hero bg-desktop-bgTint px-3 py-1 rounded-full">
-                    Grievance Form
+                    {t.grievanceFormBadge}
                   </span>
                   <h2 className="text-2xl font-black text-slate-900 mt-2 tracking-tight">{t.formTitle}</h2>
                   <p className="text-xs text-slate-500 font-medium mt-0.5">
@@ -640,10 +640,10 @@ export default function GrievanceForm({ initialRouteId }: GrievanceFormProps = {
                           onClick={() => handleSelectRoute('', '')}
                           className="p-2.5 text-xs text-slate-500 hover:bg-slate-50 cursor-pointer font-medium"
                         >
-                          -- Unspecified / General Route --
+                          {t.unspecifiedRoute}
                         </div>
                         {filteredRoutes.length === 0 ? (
-                          <div className="p-3 text-xs text-slate-400 text-center font-medium">No matching bus routes found</div>
+                          <div className="p-3 text-xs text-slate-400 text-center font-medium">{t.noMatchingRoutes}</div>
                         ) : (
                           filteredRoutes.map((rt) => (
                             <div
@@ -672,11 +672,11 @@ export default function GrievanceForm({ initialRouteId }: GrievanceFormProps = {
                   <div className="relative" ref={desktopCategoryDropdownRef}>
                     <div className="flex justify-between items-center mb-1.5">
                       <label className="block text-xs font-extrabold text-slate-700 uppercase tracking-wider">
-                        2. Grievance Category <span className="text-rose-500">*</span>
+                        {t.categoryLabel} <span className="text-rose-500">*</span>
                       </label>
                       {currentCategoryObj && (
                         <span className="text-[11px] font-bold text-amber-700 bg-amber-50 px-2 py-0.5 rounded-md border border-amber-200 flex items-center gap-1">
-                          <Clock className="w-3 h-3 text-amber-600" /> SLA: {currentCategoryObj.sla_hours}h Target
+                          <Clock className="w-3 h-3 text-amber-600" /> SLA: {currentCategoryObj.sla_hours}h {t.slaTargetText}
                         </span>
                       )}
                     </div>
@@ -687,7 +687,7 @@ export default function GrievanceForm({ initialRouteId }: GrievanceFormProps = {
                       className="w-full bg-slate-50 border border-slate-300 text-slate-900 rounded-xl p-3 text-xs font-semibold focus:outline-none focus:ring-2 focus:ring-desktop-hero flex items-center justify-between text-left shadow-sm hover:border-slate-400 transition-colors cursor-pointer"
                     >
                       <span className={selectedCategory ? 'text-slate-900 font-bold' : 'text-slate-400 font-medium'}>
-                        {selectedCategory || '-- Select Category --'}
+                        {selectedCategory ? tCat(selectedCategory) : t.categoryPlaceholder}
                       </span>
                       <ChevronDown className={`w-4 h-4 text-slate-400 transition-transform duration-200 ${showCategoryDropdown ? 'rotate-180 text-desktop-hero' : ''}`} />
                     </button>
@@ -706,7 +706,7 @@ export default function GrievanceForm({ initialRouteId }: GrievanceFormProps = {
                           }}
                           className="p-3 text-xs text-slate-500 hover:bg-slate-50 cursor-pointer font-medium"
                         >
-                          -- Unspecified / Select Category --
+                          {t.categoryPlaceholder}
                         </div>
                         {categories.map((cat) => (
                           <div
@@ -728,7 +728,7 @@ export default function GrievanceForm({ initialRouteId }: GrievanceFormProps = {
                           >
                             <div className="flex items-center space-x-2.5">
                               <div className={`w-2 h-2 rounded-full ${selectedCategory === cat.name ? 'bg-desktop-hero' : 'bg-slate-300 group-hover:bg-slate-400'}`}></div>
-                              <span className="font-semibold">{cat.name}</span>
+                              <span className="font-semibold">{tCat(cat.name)}</span>
                             </div>
                             <span className="text-[11px] font-bold text-amber-700 bg-amber-50 border border-amber-200 px-2 py-0.5 rounded-md flex items-center gap-1">
                               <Clock className="w-3 h-3 text-amber-600" />
@@ -743,7 +743,7 @@ export default function GrievanceForm({ initialRouteId }: GrievanceFormProps = {
                   {/* 3. Location */}
                   <div>
                     <label className="block text-xs font-extrabold text-slate-700 uppercase tracking-wider mb-1.5">
-                      3. Incident Location / Bus Stop
+                      {t.locationLabel}
                     </label>
                     <div className="relative">
                       <MapPin className="w-4 h-4 text-slate-400 absolute left-3.5 top-3.5" />
@@ -751,7 +751,7 @@ export default function GrievanceForm({ initialRouteId }: GrievanceFormProps = {
                         type="text"
                         value={location}
                         onChange={(e) => setLocation(e.target.value)}
-                        placeholder="e.g. Attingal Bus Stand, Seat 14, or Highway KM 42..."
+                        placeholder={t.locationPlaceholder}
                         className="w-full bg-slate-50 border border-slate-300 text-slate-900 rounded-xl py-3 pl-10 pr-4 text-xs font-semibold focus:outline-none focus:ring-2 focus:ring-desktop-hero"
                       />
                     </div>
@@ -760,13 +760,13 @@ export default function GrievanceForm({ initialRouteId }: GrievanceFormProps = {
                   {/* 4. Description */}
                   <div>
                     <label className="block text-xs font-extrabold text-slate-700 uppercase tracking-wider mb-1.5">
-                      4. Description <span className="text-rose-500">*</span>
+                      {t.descriptionLabel} <span className="text-rose-500">*</span>
                     </label>
                     <textarea
                       value={description}
                       onChange={(e) => setDescription(e.target.value)}
                       rows={3}
-                      placeholder="Describe the issue clearly (staff behavior, overcharging amount, driver rashness, etc.)..."
+                      placeholder={t.descriptionPlaceholder}
                       className="w-full bg-slate-50 border border-slate-300 text-slate-900 rounded-xl p-3 text-xs font-medium focus:outline-none focus:ring-2 focus:ring-desktop-hero"
                       required
                     />
@@ -780,8 +780,8 @@ export default function GrievanceForm({ initialRouteId }: GrievanceFormProps = {
                             onClick={() => setSelectedCategory(suggested)}
                             className="mt-1.5 bg-amber-50 border border-amber-300 text-amber-900 hover:bg-amber-100 text-[11px] font-bold px-3 py-1 rounded-lg transition-colors flex items-center gap-1.5"
                           >
-                            <span>💡 Suggested Category: <strong>{suggested}</strong></span>
-                            <span className="underline text-desktop-hero">Click to apply</span>
+                            <span>{t.suggestedCategoryText} <strong>{tCat(suggested)}</strong></span>
+                            <span className="underline text-desktop-hero">{t.clickToApplyText}</span>
                           </button>
                         );
                       }
@@ -792,7 +792,7 @@ export default function GrievanceForm({ initialRouteId }: GrievanceFormProps = {
                   {/* 5. Photo Upload */}
                   <div>
                     <label className="block text-xs font-extrabold text-slate-700 uppercase tracking-wider mb-1.5">
-                      5. Photo / Ticket Evidence (Optional)
+                      {t.evidenceLabel}
                     </label>
                     <div className="border-2 border-dashed border-slate-200 hover:border-desktop-hero bg-slate-50/50 rounded-2xl p-4 text-center transition-colors cursor-pointer relative">
                       <input
@@ -804,9 +804,9 @@ export default function GrievanceForm({ initialRouteId }: GrievanceFormProps = {
                       <div className="flex flex-col items-center justify-center space-y-1">
                         <UploadCloud className="w-6 h-6 text-desktop-hero" />
                         <span className="text-xs font-semibold text-slate-700">
-                          {evidenceFileName ? evidenceFileName : 'Click or drop ticket photo / evidence image here'}
+                          {evidenceFileName ? evidenceFileName : t.evidenceDropText}
                         </span>
-                        <span className="text-[10px] text-slate-400">Supports JPG, PNG up to 5MB</span>
+                        <span className="text-[10px] text-slate-400">{t.evidenceSubtext}</span>
                       </div>
                     </div>
                   </div>
@@ -815,10 +815,10 @@ export default function GrievanceForm({ initialRouteId }: GrievanceFormProps = {
                   <div>
                     <div className="flex justify-between items-center mb-1.5">
                       <label className="block text-xs font-extrabold text-slate-700 uppercase tracking-wider">
-                        6. Passenger Email <span className="text-rose-500">*</span>
+                        {t.emailLabel} <span className="text-rose-500">*</span>
                       </label>
                       <span className="text-[10px] font-bold text-sky-700 bg-sky-50 px-2 py-0.5 rounded border border-sky-200 flex items-center gap-1">
-                        <Mail className="w-3 h-3 text-sky-600" /> Instant Email Confirmation
+                        <Mail className="w-3 h-3 text-sky-600" /> {t.emailSubLabel}
                       </span>
                     </div>
                     <div className="relative">
@@ -827,7 +827,7 @@ export default function GrievanceForm({ initialRouteId }: GrievanceFormProps = {
                         type="email"
                         value={passengerEmail}
                         onChange={(e) => setPassengerEmail(e.target.value)}
-                        placeholder="e.g. passenger@gmail.com (Required to receive email receipt)"
+                        placeholder={t.emailPlaceholder}
                         className="w-full bg-slate-50 border border-slate-300 text-slate-900 rounded-xl py-3 pl-10 pr-4 text-xs font-semibold focus:outline-none focus:ring-2 focus:ring-desktop-hero"
                         required
                       />
@@ -842,10 +842,10 @@ export default function GrievanceForm({ initialRouteId }: GrievanceFormProps = {
                           </div>
                           <div>
                             <h4 className="text-xs font-black uppercase text-amber-950 tracking-wider">
-                              ⚠️ Similar Active Grievance Found (#{detectedDuplicate.reference_number})
+                              ⚠️ {t.similarGrievanceTitle} (#{detectedDuplicate.reference_number})
                             </h4>
                             <p className="text-xs text-amber-800 font-medium mt-0.5">
-                              An open complaint for <strong className="font-extrabold text-amber-950">{detectedDuplicate.category}</strong> was recently registered on this route.
+                              {t.similarGrievanceNotice}
                             </p>
                           </div>
                         </div>
@@ -868,7 +868,7 @@ export default function GrievanceForm({ initialRouteId }: GrievanceFormProps = {
                                 : 'bg-white text-amber-900 border-amber-300 hover:bg-amber-100'
                             }`}
                           >
-                            <span>🔗 Attach to Ticket #{detectedDuplicate.reference_number}</span>
+                            <span>{t.attachToTicketBtn} #{detectedDuplicate.reference_number}</span>
                           </button>
                           <button
                             type="button"
@@ -879,7 +879,7 @@ export default function GrievanceForm({ initialRouteId }: GrievanceFormProps = {
                                 : 'bg-white text-slate-600 border-slate-200 hover:bg-slate-100'
                             }`}
                           >
-                            <span>File as New Ticket</span>
+                            <span>{t.newTicketBtn}</span>
                           </button>
                         </div>
                       </div>
@@ -895,37 +895,37 @@ export default function GrievanceForm({ initialRouteId }: GrievanceFormProps = {
                   <div className="bg-gradient-to-r from-desktop-deep to-desktop-hero text-white p-5 flex justify-between items-center">
                     <div>
                       <span className="text-[10px] uppercase font-black tracking-widest text-blue-200 block">
-                        Grievance Details
+                        {t.grievanceDetailsBadge}
                       </span>
-                      <h3 className="text-lg font-black text-white">Summary Review</h3>
+                      <h3 className="text-lg font-black text-white">{t.summaryReviewTitle}</h3>
                     </div>
                     <span className="bg-white/20 text-white font-bold text-xs px-3 py-1 rounded-full border border-white/30 backdrop-blur-sm">
-                      Step 1 of 2
+                      {t.stepProgressText}
                     </span>
                   </div>
 
                   {/* Summary Content Fields */}
                   <div className="p-6 space-y-4 text-xs bg-slate-50/50">
                     <div className="bg-white p-3.5 rounded-2xl border border-slate-200 shadow-sm space-y-1">
-                      <span className="text-[10px] uppercase font-bold text-slate-400 block">Selected Route</span>
+                      <span className="text-[10px] uppercase font-bold text-slate-400 block">{t.selectedRouteHeader}</span>
                       <div className="font-bold text-slate-800 text-sm flex items-center gap-1.5">
                         <Bus className="w-4 h-4 text-desktop-hero" />
-                        <span>{selectedRouteObj ? `${selectedRouteObj.id} - ${selectedRouteObj.name}` : 'Not selected yet'}</span>
+                        <span>{selectedRouteObj ? `${selectedRouteObj.id} - ${selectedRouteObj.name}` : t.notSelectedYet}</span>
                       </div>
                     </div>
 
                     <div className="bg-white p-3.5 rounded-2xl border border-slate-200 shadow-sm space-y-1">
-                      <span className="text-[10px] uppercase font-bold text-slate-400 block">Assigned Depot Preview</span>
+                      <span className="text-[10px] uppercase font-bold text-slate-400 block">{t.assignedDepotHeader}</span>
                       <div className="font-bold text-slate-800 text-sm flex items-center gap-1.5">
                         <Building2 className="w-4 h-4 text-desktop-hero" />
-                        <span>{mappedDepotObj ? `${mappedDepotObj.name} (${mappedDepotObj.id})` : 'Central Operations'}</span>
+                        <span>{mappedDepotObj ? `${mappedDepotObj.name} (${mappedDepotObj.id})` : t.centralOperations}</span>
                       </div>
                     </div>
 
                     <div className="bg-white p-3.5 rounded-2xl border border-slate-200 shadow-sm space-y-1">
-                      <span className="text-[10px] uppercase font-bold text-slate-400 block">Grievance Category</span>
+                      <span className="text-[10px] uppercase font-bold text-slate-400 block">{t.grievanceCategoryHeader}</span>
                       <div className="font-bold text-slate-800 text-sm flex items-center justify-between">
-                        <span>{selectedCategory || 'Not chosen yet'}</span>
+                        <span>{selectedCategory ? tCat(selectedCategory) : t.notChosenYet}</span>
                         {currentCategoryObj && (
                           <span className="text-[11px] font-bold text-amber-700 bg-amber-50 px-2 py-0.5 rounded-md">
                             {currentCategoryObj.sla_hours}h SLA
@@ -935,9 +935,9 @@ export default function GrievanceForm({ initialRouteId }: GrievanceFormProps = {
                     </div>
 
                     <div className="bg-white p-3.5 rounded-2xl border border-slate-200 shadow-sm space-y-1">
-                      <span className="text-[10px] uppercase font-bold text-slate-400 block">Incident Location</span>
+                      <span className="text-[10px] uppercase font-bold text-slate-400 block">{t.incidentLocationHeader}</span>
                       <div className="font-semibold text-slate-700 text-xs truncate">
-                        {location || 'Optional / Unspecified'}
+                        {location || t.optionalUnspecified}
                       </div>
                     </div>
 
@@ -945,11 +945,11 @@ export default function GrievanceForm({ initialRouteId }: GrievanceFormProps = {
                     <div className="pt-2 border-t border-slate-200 space-y-1.5 text-[11px] font-semibold text-slate-600">
                       <div className="flex items-center gap-2">
                         <CheckCircle2 className={`w-4 h-4 ${selectedCategory ? 'text-emerald-500' : 'text-slate-300'}`} />
-                        <span>Category Selected</span>
+                        <span>{t.checkCategorySelected}</span>
                       </div>
                       <div className="flex items-center gap-2">
                         <CheckCircle2 className={`w-4 h-4 ${description.trim() ? 'text-emerald-500' : 'text-slate-300'}`} />
-                        <span>Incident Description Provided</span>
+                        <span>{t.checkDescriptionProvided}</span>
                       </div>
                     </div>
                   </div>
@@ -966,7 +966,7 @@ export default function GrievanceForm({ initialRouteId }: GrievanceFormProps = {
                       <span>{submitting ? t.submittingBtn : t.submitBtn}</span>
                     </button>
                     <p className="text-[10px] text-slate-400 text-center font-medium">
-                      Instant reference generated • 100% Offline SQLite database
+                      {t.instantReferenceFooter}
                     </p>
                   </div>
                 </div>
@@ -985,17 +985,17 @@ export default function GrievanceForm({ initialRouteId }: GrievanceFormProps = {
                   <div className="flex items-center space-x-2">
                     <Bus className="w-5 h-5 text-white" />
                     <span className="text-xs font-black uppercase tracking-wider text-blue-100">
-                      Step {mobileStep} of 4
+                      {t.mobileStepText} {mobileStep} {t.mobileStepOf} 4
                     </span>
                   </div>
                   <span className="text-[10px] bg-white/20 font-extrabold px-2.5 py-0.5 rounded-full text-white">
                     {mobileStep === 1
-                      ? 'Route Selection'
+                      ? t.mobileStep1Title
                       : mobileStep === 2
-                      ? 'Category'
+                      ? t.mobileStep2Title
                       : mobileStep === 3
-                      ? 'Location'
-                      : 'Description & Evidence'}
+                      ? t.mobileStep3Title
+                      : t.mobileStep4Title}
                   </span>
                 </div>
 
@@ -1018,7 +1018,7 @@ export default function GrievanceForm({ initialRouteId }: GrievanceFormProps = {
                         mobileStep === stepNum ? 'bg-white text-mobile-header font-black shadow' : 'text-blue-100/70 hover:text-white'
                       }`}
                     >
-                      Step {stepNum}
+                      {t.mobileStepText} {stepNum}
                     </button>
                   ))}
                 </div>
@@ -1037,8 +1037,8 @@ export default function GrievanceForm({ initialRouteId }: GrievanceFormProps = {
                 {mobileStep === 1 && (
                   <div className="space-y-4 animate-fade-in">
                     <div>
-                      <h3 className="text-lg font-black text-slate-900">Select Bus Route</h3>
-                      <p className="text-xs text-slate-500 font-medium">Which bus service was involved?</p>
+                      <h3 className="text-lg font-black text-slate-900">{t.selectBusRouteTitle}</h3>
+                      <p className="text-xs text-slate-500 font-medium">{t.selectBusRouteSubtitle}</p>
                     </div>
 
                     <div className="relative" ref={mobileDropdownRef}>
@@ -1053,7 +1053,7 @@ export default function GrievanceForm({ initialRouteId }: GrievanceFormProps = {
                             setShowRouteDropdown(true);
                           }}
                           onFocus={() => setShowRouteDropdown(true)}
-                          placeholder="Search route name or code..."
+                          placeholder={t.routePlaceholder}
                           className="w-full bg-mobile-cardTint border border-mobile-border text-slate-900 rounded-2xl py-3.5 pl-11 pr-10 text-xs font-extrabold focus:outline-none focus:ring-2 focus:ring-mobile-header"
                         />
                         {selectedRouteId ? (
@@ -1076,7 +1076,7 @@ export default function GrievanceForm({ initialRouteId }: GrievanceFormProps = {
                       {mappedDepotObj && (
                         <div className="mt-2 text-xs font-bold text-mobile-primaryBtn bg-blue-50 border border-blue-200 p-2.5 rounded-xl flex items-center gap-2">
                           <Building2 className="w-4 h-4 text-mobile-header" />
-                          <span>Mapped Depot: {mappedDepotObj.name} ({mappedDepotObj.id})</span>
+                          <span>{t.mappedDepotText} {mappedDepotObj.name} ({mappedDepotObj.id})</span>
                         </div>
                       )}
 
@@ -1091,10 +1091,10 @@ export default function GrievanceForm({ initialRouteId }: GrievanceFormProps = {
                             onClick={() => handleSelectRoute('', '')}
                             className="p-2.5 text-xs text-slate-500 hover:bg-slate-50 cursor-pointer font-medium"
                           >
-                            -- Unspecified / General Route --
+                            {t.unspecifiedRoute}
                           </div>
                           {filteredRoutes.length === 0 ? (
-                            <div className="p-3 text-xs text-slate-400 text-center font-medium">No matching bus routes found</div>
+                            <div className="p-3 text-xs text-slate-400 text-center font-medium">{t.noMatchingRoutes}</div>
                           ) : (
                             filteredRoutes.map((rt) => (
                               <div
@@ -1121,8 +1121,8 @@ export default function GrievanceForm({ initialRouteId }: GrievanceFormProps = {
                 {mobileStep === 2 && (
                   <div className="space-y-4 animate-fade-in">
                     <div>
-                      <h3 className="text-lg font-black text-slate-900">Choose Grievance Category</h3>
-                      <p className="text-xs text-slate-500 font-medium">SLA resolution targets will be applied automatically.</p>
+                      <h3 className="text-lg font-black text-slate-900">{t.chooseCategoryTitle}</h3>
+                      <p className="text-xs text-slate-500 font-medium">{t.chooseCategorySubtitle}</p>
                     </div>
 
                     <div className="space-y-2">
@@ -1138,10 +1138,10 @@ export default function GrievanceForm({ initialRouteId }: GrievanceFormProps = {
                         >
                           <div className="flex items-center space-x-3">
                             <Clock className={`w-4 h-4 ${selectedCategory === cat.name ? 'text-mobile-header' : 'text-slate-400'}`} />
-                            <span>{cat.name}</span>
+                            <span>{tCat(cat.name)}</span>
                           </div>
                           <span className="text-[11px] font-extrabold bg-amber-100 text-amber-800 px-2.5 py-1 rounded-full">
-                            {cat.sla_hours}h SLA Target
+                            {cat.sla_hours}h SLA
                           </span>
                         </div>
                       ))}
@@ -1153,8 +1153,8 @@ export default function GrievanceForm({ initialRouteId }: GrievanceFormProps = {
                 {mobileStep === 3 && (
                   <div className="space-y-4 animate-fade-in">
                     <div>
-                      <h3 className="text-lg font-black text-slate-900">Incident Location</h3>
-                      <p className="text-xs text-slate-500 font-medium">Bus stand name, landmark, or seat position.</p>
+                      <h3 className="text-lg font-black text-slate-900">{t.incidentLocationTitle}</h3>
+                      <p className="text-xs text-slate-500 font-medium">{t.incidentLocationSubtitle}</p>
                     </div>
 
                     <div className="relative">
@@ -1163,7 +1163,7 @@ export default function GrievanceForm({ initialRouteId }: GrievanceFormProps = {
                         type="text"
                         value={location}
                         onChange={(e) => setLocation(e.target.value)}
-                        placeholder="e.g. Attingal Stand, Seat 12, or Highway KM 40..."
+                        placeholder={t.locationPlaceholder}
                         className="w-full bg-mobile-cardTint border border-mobile-border text-slate-900 rounded-2xl py-3.5 pl-11 pr-4 text-xs font-bold focus:outline-none focus:ring-2 focus:ring-mobile-header"
                       />
                     </div>
@@ -1174,8 +1174,8 @@ export default function GrievanceForm({ initialRouteId }: GrievanceFormProps = {
                 {mobileStep === 4 && (
                   <div className="space-y-4 animate-fade-in">
                     <div>
-                      <h3 className="text-lg font-black text-slate-900">Description & Photo Evidence</h3>
-                      <p className="text-xs text-slate-500 font-medium">Explain the issue clearly to help depot managers.</p>
+                      <h3 className="text-lg font-black text-slate-900">{t.descEvidenceTitle}</h3>
+                      <p className="text-xs text-slate-500 font-medium">{t.descEvidenceSubtitle}</p>
                     </div>
 
                     <div className="space-y-3">
@@ -1184,7 +1184,7 @@ export default function GrievanceForm({ initialRouteId }: GrievanceFormProps = {
                           value={description}
                           onChange={(e) => setDescription(e.target.value)}
                           rows={4}
-                          placeholder="Type details (e.g. conductor overcharged fare, bus skipped scheduled stop)..."
+                          placeholder={t.descriptionPlaceholder}
                           className="w-full bg-mobile-cardTint border border-mobile-border text-slate-900 rounded-2xl p-4 text-xs font-medium focus:outline-none focus:ring-2 focus:ring-mobile-header"
                           required
                         />
@@ -1200,8 +1200,8 @@ export default function GrievanceForm({ initialRouteId }: GrievanceFormProps = {
                               onClick={() => setSelectedCategory(suggested)}
                               className="w-full bg-amber-50 border border-amber-300 text-amber-900 text-xs font-bold p-3 rounded-xl flex items-center justify-between"
                             >
-                              <span>💡 Auto-suggest: <strong>{suggested}</strong></span>
-                              <span className="underline text-mobile-header">Apply</span>
+                              <span>{t.suggestedCategoryText} <strong>{tCat(suggested)}</strong></span>
+                              <span className="underline text-mobile-header">{t.clickToApplyText}</span>
                             </button>
                           );
                         }
@@ -1219,7 +1219,7 @@ export default function GrievanceForm({ initialRouteId }: GrievanceFormProps = {
                         <div className="flex flex-col items-center justify-center space-y-1">
                           <UploadCloud className="w-5 h-5 text-mobile-header" />
                           <span className="text-xs font-bold text-slate-700">
-                            {evidenceFileName ? evidenceFileName : 'Attach Ticket / Photo Evidence'}
+                            {evidenceFileName ? evidenceFileName : t.attachTicketEvidence}
                           </span>
                         </div>
                       </div>
@@ -1227,7 +1227,7 @@ export default function GrievanceForm({ initialRouteId }: GrievanceFormProps = {
                       {/* Passenger Email */}
                       <div>
                         <label className="block text-xs font-extrabold text-slate-700 uppercase tracking-wider mb-1">
-                          Passenger Email <span className="text-rose-500">*</span>
+                          {t.emailLabel} <span className="text-rose-500">*</span>
                         </label>
                         <div className="relative">
                           <Mail className="w-4 h-4 text-mobile-header absolute left-3.5 top-3.5" />
@@ -1235,7 +1235,7 @@ export default function GrievanceForm({ initialRouteId }: GrievanceFormProps = {
                             type="email"
                             value={passengerEmail}
                             onChange={(e) => setPassengerEmail(e.target.value)}
-                            placeholder="Email address for live status updates..."
+                            placeholder={t.emailStatusUpdatesPlaceholder}
                             className="w-full bg-mobile-cardTint border border-mobile-border text-slate-900 rounded-2xl py-3 pl-10 pr-4 text-xs font-bold focus:outline-none focus:ring-2 focus:ring-mobile-header"
                             required
                           />
@@ -1249,10 +1249,10 @@ export default function GrievanceForm({ initialRouteId }: GrievanceFormProps = {
                             <AlertTriangle className="w-5 h-5 text-amber-600 shrink-0 mt-0.5" />
                             <div>
                               <h4 className="text-xs font-black uppercase text-amber-950">
-                                ⚠️ Similar Ticket Found (#{detectedDuplicate.reference_number})
+                                ⚠️ {t.similarGrievanceTitle} (#{detectedDuplicate.reference_number})
                               </h4>
                               <p className="text-[11px] text-amber-800 font-medium">
-                                An active complaint for {detectedDuplicate.category} already exists.
+                                {t.similarGrievanceNotice}
                               </p>
                             </div>
                           </div>
@@ -1272,7 +1272,7 @@ export default function GrievanceForm({ initialRouteId }: GrievanceFormProps = {
                                   : 'bg-white text-amber-900 border-amber-300'
                               }`}
                             >
-                              Attach to #{detectedDuplicate.reference_number}
+                              {t.attachToTicketBtn} #{detectedDuplicate.reference_number}
                             </button>
                             <button
                               type="button"
@@ -1283,7 +1283,7 @@ export default function GrievanceForm({ initialRouteId }: GrievanceFormProps = {
                                   : 'bg-white text-slate-600 border-slate-200'
                               }`}
                             >
-                              New Ticket
+                              {t.newTicketBtn}
                             </button>
                           </div>
                         </div>
@@ -1303,13 +1303,13 @@ export default function GrievanceForm({ initialRouteId }: GrievanceFormProps = {
                 >
                   {mobileStep < 4 ? (
                     <>
-                      <span>Next Step ({mobileStep}/4)</span>
+                      <span>{t.nextStepBtn} ({mobileStep}/4)</span>
                       <ChevronRight className="w-4 h-4" />
                     </>
                   ) : (
                     <>
                       <Send className="w-4 h-4" />
-                      <span>{submitting ? 'Registering...' : 'Submit Grievance Now'}</span>
+                      <span>{submitting ? t.submittingBtn : t.submitBtn}</span>
                     </>
                   )}
                 </button>
@@ -1320,7 +1320,7 @@ export default function GrievanceForm({ initialRouteId }: GrievanceFormProps = {
                     onClick={() => setMobileStep(mobileStep - 1)}
                     className="w-full text-slate-500 font-bold text-xs text-center py-2 hover:text-slate-800"
                   >
-                    ← Back to Previous Step
+                    {t.backToPreviousStep}
                   </button>
                 )}
               </div>
