@@ -272,3 +272,177 @@ export async function sendStatusUpdateEmail(data: {
     console.error(`[Resend Exception] Failed to send status update email to ${data.passengerEmail}:`, error);
   }
 }
+
+export interface ForwardedGrievanceItem {
+  referenceNumber: string;
+  category: string;
+  routeName?: string;
+  depotName?: string;
+  description: string;
+  location?: string;
+  status: string;
+  slaDeadline: string;
+  createdAt: string;
+  escalated?: boolean | number;
+  passengerEmail?: string;
+}
+
+export async function sendForwardedGrievancesEmail(data: {
+  officialEmail: string;
+  officialName: string;
+  forwardedBy: string;
+  priority: string;
+  remarks?: string;
+  complaints: ForwardedGrievanceItem[];
+}) {
+  if (!data.officialEmail || data.complaints.length === 0) return;
+
+  const appUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://yathracare.vercel.app';
+  const priorityColor =
+    data.priority === 'URGENT' ? '#e11d48' : data.priority === 'HIGH' ? '#ea580c' : '#0284c7';
+
+  const rowsHtml = data.complaints
+    .map((c, idx) => {
+      const deadline = new Date(c.slaDeadline).toLocaleString('en-IN', {
+        dateStyle: 'medium',
+        timeStyle: 'short',
+      });
+      const trackingLink = `${appUrl}/track/${c.referenceNumber}`;
+
+      return `
+        <tr style="border-bottom: 1px solid #e2e8f0; background: ${idx % 2 === 0 ? '#ffffff' : '#f8fafc'};">
+          <td style="padding: 12px; font-family: monospace; font-weight: bold; color: #0369a1;">
+            <a href="${trackingLink}" style="color: #0284c7; text-decoration: none;">#${c.referenceNumber}</a>
+            ${c.escalated ? '<span style="display:block; color:#e11d48; font-size:10px; font-weight:800;">OVERDUE</span>' : ''}
+          </td>
+          <td style="padding: 12px; font-size: 13px; font-weight: 600; color: #334155;">
+            ${c.category}
+            <span style="display: block; font-size: 11px; color: #64748b; font-weight: 400;">${c.routeName || 'General Route'}</span>
+          </td>
+          <td style="padding: 12px; font-size: 12px; color: #475569; max-width: 220px;">
+            <div style="margin-bottom: 4px;">${c.description}</div>
+            ${c.location ? `<span style="font-size: 10px; color: #94a3b8;">📍 ${c.location}</span>` : ''}
+          </td>
+          <td style="padding: 12px; font-size: 11px; color: #64748b; white-space: nowrap;">
+            <span style="background: #f1f5f9; padding: 2px 6px; border-radius: 4px; font-weight: bold; color: #334155;">${c.status}</span>
+            <div style="font-size: 10px; color: #d97706; margin-top: 4px;">Target: ${deadline}</div>
+          </td>
+        </tr>
+      `;
+    })
+    .join('');
+
+  const htmlContent = `
+    <!DOCTYPE html>
+    <html>
+    <head>
+      <meta charset="utf-8">
+      <style>
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f1f5f9; color: #1e293b; margin: 0; padding: 24px; }
+        .container { max-width: 680px; margin: 0 auto; background: #ffffff; border-radius: 16px; overflow: hidden; border: 1px solid #cbd5e1; box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1); }
+        .header { background: linear-gradient(135deg, #091e42 0%, #0f398a 100%); padding: 28px 24px; color: #ffffff; text-align: left; }
+        .header-title { font-size: 18px; font-weight: 800; margin: 0; text-transform: uppercase; letter-spacing: 0.5px; color: #93c5fd; }
+        .header-sub { font-size: 22px; font-weight: 900; margin: 6px 0 0 0; color: #ffffff; }
+        .priority-tag { display: inline-block; background: ${priorityColor}; color: #ffffff; padding: 4px 12px; border-radius: 9999px; font-size: 11px; font-weight: 800; text-transform: uppercase; margin-top: 8px; }
+        .body { padding: 28px 24px; }
+        .memo-box { background: #f8fafc; border: 1px solid #e2e8f0; border-left: 4px solid #0f398a; border-radius: 8px; padding: 16px; margin-bottom: 24px; font-size: 13px; line-height: 1.6; }
+        .table-wrap { width: 100%; border-collapse: collapse; border: 1px solid #e2e8f0; border-radius: 8px; overflow: hidden; margin-top: 16px; }
+        .th { background: #0f2757; color: #ffffff; padding: 12px; font-size: 11px; text-transform: uppercase; letter-spacing: 0.5px; text-align: left; }
+        .cta-btn { display: inline-block; background: #0f398a; color: #ffffff !important; font-weight: 800; font-size: 13px; padding: 12px 28px; border-radius: 8px; text-decoration: none; text-align: center; margin-top: 24px; }
+        .footer { background: #f8fafc; padding: 16px 24px; text-align: center; font-size: 11px; color: #94a3b8; border-top: 1px solid #e2e8f0; }
+      </style>
+    </head>
+    <body>
+      <div class="container">
+        <div class="header">
+          <div class="header-title">KSRTC Yathra Care Command & Oversight</div>
+          <div class="header-sub">Grievance Escalation Dossier (${data.complaints.length} Cases)</div>
+          <div class="priority-tag">Priority: ${data.priority}</div>
+        </div>
+        <div class="body">
+          <p><strong>To:</strong> ${data.officialName} (${data.officialEmail})<br>
+             <strong>From:</strong> ${data.forwardedBy}<br>
+             <strong>Date:</strong> ${new Date().toLocaleString('en-IN', { dateStyle: 'full', timeStyle: 'short' })}
+          </p>
+
+          <div class="memo-box">
+            <strong style="color: #0f398a; text-transform: uppercase; font-size: 11px; letter-spacing: 0.5px;">Officer Submission Remarks:</strong><br>
+            ${data.remarks ? data.remarks.replace(/\n/g, '<br>') : 'The following passenger grievance cases have been selected and forwarded for administrative review, vigilance intervention, or executive action.'}
+          </div>
+
+          <h3 style="font-size: 14px; font-weight: 800; color: #0f2757; margin-bottom: 8px; text-transform: uppercase;">
+            Summary of Forwarded Grievances (${data.complaints.length})
+          </h3>
+
+          <table class="table-wrap">
+            <thead>
+              <tr>
+                <th class="th">Ref ID</th>
+                <th class="th">Category / Route</th>
+                <th class="th">Allegation Details</th>
+                <th class="th">Status & SLA</th>
+              </tr>
+            </thead>
+            <tbody>
+              ${rowsHtml}
+            </tbody>
+          </table>
+
+          <div style="text-align: center;">
+            <a href="${appUrl}/dashboard?tab=operations" class="cta-btn">Access Central Operations Dashboard</a>
+          </div>
+        </div>
+        <div class="footer">
+          Confidential Administrative Communication • Government of Kerala Transport Department • KSRTC Central Operations
+        </div>
+      </div>
+    </body>
+    </html>
+  `;
+
+  // 1. Try Gmail / Custom SMTP
+  const transporter = getNodemailerTransporter();
+  if (transporter) {
+    try {
+      const senderUser = process.env.SMTP_USER || process.env.GMAIL_USER;
+      const mailRes = await transporter.sendMail({
+        from: `Yathra Care Command <${senderUser}>`,
+        to: data.officialEmail,
+        subject: `[KSRTC Escalation Dossier] ${data.complaints.length} Grievance(s) Forwarded for Review (${data.priority})`,
+        html: htmlContent,
+      });
+      console.log(`[Gmail SMTP Success] Dossier forwarded to ${data.officialEmail} (MessageId: ${mailRes.messageId})`);
+      return mailRes;
+    } catch (err) {
+      console.error(`[Gmail SMTP Error] Failed to forward dossier via Gmail:`, err);
+    }
+  }
+
+  // 2. Fallback to Resend API
+  const resend = getResendClient();
+  if (!resend) return;
+
+  try {
+    const response = await resend.emails.send({
+      from: FROM_EMAIL,
+      to: [data.officialEmail],
+      subject: `[KSRTC Escalation Dossier] ${data.complaints.length} Grievance(s) Forwarded for Review (${data.priority})`,
+      html: htmlContent,
+    });
+
+    if (response.error) {
+      if (response.error.message?.includes('can only send testing emails') || response.error.statusCode === 403) {
+        return await resend.emails.send({
+          from: FROM_EMAIL,
+          to: [OWNER_EMAIL],
+          subject: `[Forwarded Dossier to ${data.officialEmail}] ${data.complaints.length} Grievance(s) (${data.priority})`,
+          html: htmlContent,
+        });
+      }
+    }
+    return response;
+  } catch (error) {
+    console.error(`[Resend Exception] Failed to forward dossier:`, error);
+  }
+}
+
