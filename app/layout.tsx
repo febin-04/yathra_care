@@ -32,6 +32,8 @@ export const metadata: Metadata = {
   },
 };
 
+import { LanguageProvider } from '@/context/LanguageContext';
+
 export default function RootLayout({
   children,
 }: Readonly<{
@@ -40,22 +42,24 @@ export default function RootLayout({
   return (
     <html lang="en" className={`${lexend.variable} ${hankenGrotesk.variable}`}>
       <body className={`${hankenGrotesk.className} bg-slate-50 text-slate-900 min-h-screen flex flex-col pb-16 md:pb-0`}>
-        <Preloader />
-        <Header />
-        <main className="flex-1 w-full">
-          {children}
-        </main>
-        <footer className="bg-white border-t border-slate-200 py-6 text-center text-xs text-slate-500 mb-14 md:mb-0">
-          <div className="max-w-7xl mx-auto px-4 flex flex-col sm:flex-row justify-between items-center gap-2">
-            <div>
-              <strong className="text-slate-700">Yathra Care Grievance Portal</strong> — Offline SQLite Operations Engine
+        <LanguageProvider>
+          <Preloader />
+          <Header />
+          <main className="flex-1 w-full">
+            {children}
+          </main>
+          <footer className="bg-white border-t border-slate-200 py-6 text-center text-xs text-slate-500 mb-14 md:mb-0">
+            <div className="max-w-7xl mx-auto px-4 flex flex-col sm:flex-row justify-between items-center gap-2">
+              <div>
+                <strong className="text-slate-700">Yathra Care Grievance Portal</strong> — Offline SQLite Operations Engine
+              </div>
+              <div>
+                Status: <span className="text-emerald-600 font-bold">● Local System Ready</span> (No External Cloud Needed)
+              </div>
             </div>
-            <div>
-              Status: <span className="text-emerald-600 font-bold">● Local System Ready</span> (No External Cloud Needed)
-            </div>
-          </div>
-        </footer>
-        <BottomNav />
+          </footer>
+          <BottomNav />
+        </LanguageProvider>
       </body>
     </html>
   );

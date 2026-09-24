@@ -27,27 +27,30 @@ import {
   ChevronDown,
 } from 'lucide-react';
 
+import { useLanguage } from '@/context/LanguageContext';
+
 export default function EntryPage() {
   const router = useRouter();
+  const { language, setLanguage, t } = useLanguage();
 
   // Mobile Intro Slider State
   const [activeSlide, setActiveSlide] = useState(0);
   const slides = [
     {
-      title: 'Welcome to Yathra Care Grievance Portal',
-      subtitle: 'Fast, offline passenger complaint registration and route SLA management.',
+      title: t.heroTitle,
+      subtitle: t.heroSubtitle,
       icon: <Bus className="w-16 h-16 text-mobile-header" />,
       tag: 'OFFLINE FIRST',
     },
     {
-      title: 'Quick & Reliable SLA Tracking',
-      subtitle: 'Every report is assigned an automated resolution deadline per depot SLA targets.',
+      title: t.quickReport,
+      subtitle: t.formSubtitle,
       icon: <Clock className="w-16 h-16 text-amber-500" />,
       tag: 'AUTOMATED SLA',
     },
     {
-      title: 'Effortless Route Resolution',
-      subtitle: 'Scan route QR codes or pick your bus service to lodge issues in under 60 seconds.',
+      title: t.trackExisting,
+      subtitle: 'Track live status & SLA history of reported complaints.',
       icon: <ShieldCheck className="w-16 h-16 text-emerald-500" />,
       tag: '60-SECOND FORM',
     },
@@ -135,14 +138,57 @@ export default function EntryPage() {
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
             {/* Left Content */}
             <div className="lg:col-span-7 space-y-5">
+              <span className="bg-desktop-accent text-white text-xs font-black px-3.5 py-1 rounded-full uppercase tracking-wider shadow-md inline-block">
+                {t.heroBadge}
+              </span>
+
               <h1 className="text-3xl lg:text-4xl xl:text-5xl font-heading text-white tracking-tight leading-tight drop-shadow-md">
-                Regular & Express Bus <br />
-                <span className="text-desktop-accent">Passenger Grievance Portal</span>
+                {t.heroTitle}
               </h1>
 
               <p className="text-sm text-blue-100 max-w-xl font-medium leading-relaxed drop-shadow-sm">
-                Register operational issues, bus delays, or staff misconduct. Every report is automatically assigned a guaranteed SLA deadline and routed to depot command.
+                {t.heroSubtitle}
               </p>
+
+              {/* HOME PAGE LANGUAGE SWITCHER BUTTONS */}
+              <div className="pt-2 flex flex-wrap items-center gap-3">
+                <span className="text-xs font-extrabold text-blue-200">🌐 Choose Language:</span>
+                <div className="flex items-center bg-slate-900/80 backdrop-blur-md p-1 rounded-2xl border border-white/20 shadow-xl">
+                  <button
+                    type="button"
+                    onClick={() => setLanguage('en')}
+                    className={`px-3.5 py-1.5 text-xs font-black rounded-xl transition-all cursor-pointer ${
+                      language === 'en'
+                        ? 'bg-desktop-accent text-white shadow-lg scale-105'
+                        : 'text-slate-300 hover:text-white hover:bg-white/10'
+                    }`}
+                  >
+                    English
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setLanguage('ml')}
+                    className={`px-3.5 py-1.5 text-xs font-black rounded-xl transition-all cursor-pointer ${
+                      language === 'ml'
+                        ? 'bg-desktop-accent text-white shadow-lg scale-105'
+                        : 'text-slate-300 hover:text-white hover:bg-white/10'
+                    }`}
+                  >
+                    മലയാളം
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setLanguage('hi')}
+                    className={`px-3.5 py-1.5 text-xs font-black rounded-xl transition-all cursor-pointer ${
+                      language === 'hi'
+                        ? 'bg-desktop-accent text-white shadow-lg scale-105'
+                        : 'text-slate-300 hover:text-white hover:bg-white/10'
+                    }`}
+                  >
+                    हिन्दी
+                  </button>
+                </div>
+              </div>
             </div>
 
             {/* Right Hero Action Card with Glassmorphism Frosted Glass */}

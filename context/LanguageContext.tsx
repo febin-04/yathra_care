@@ -1,0 +1,258 @@
+'use client';
+
+import React, { createContext, useContext, useState, useEffect } from 'react';
+
+export type Language = 'en' | 'ml' | 'hi';
+
+export interface Translations {
+  // Navigation & Header
+  reportGrievance: string;
+  trackStatus: string;
+  depotDashboard: string;
+  help: string;
+  inbox: string;
+  portalSubtitle: string;
+  selectLanguage: string;
+  
+  // Home page Hero & Sections
+  heroTitle: string;
+  heroSubtitle: string;
+  heroBadge: string;
+  quickReport: string;
+  trackExisting: string;
+
+  // Grievance Form
+  formTitle: string;
+  formSubtitle: string;
+  routeLabel: string;
+  routePlaceholder: string;
+  categoryLabel: string;
+  categoryPlaceholder: string;
+  locationLabel: string;
+  locationPlaceholder: string;
+  descriptionLabel: string;
+  descriptionPlaceholder: string;
+  evidenceLabel: string;
+  emailLabel: string;
+  emailPlaceholder: string;
+  submitBtn: string;
+  submittingBtn: string;
+  
+  // Messages & Badges
+  similarGrievanceTitle: string;
+  similarGrievanceNotice: string;
+  attachToTicketBtn: string;
+  newTicketBtn: string;
+  ticketRegistered: string;
+  refCodeLabel: string;
+  copyRefBtn: string;
+  copiedMsg: string;
+  trackLiveStatusBtn: string;
+  submitAnotherBtn: string;
+  
+  // Dashboard & Stats
+  totalComplaints: string;
+  submitted: string;
+  inProgress: string;
+  resolved: string;
+  slaEscalated: string;
+  needsAttention: string;
+  trendAlertsTitle: string;
+  filterRouteTickets: string;
+}
+
+export const translations: Record<Language, Translations> = {
+  en: {
+    reportGrievance: 'Report Grievance',
+    trackStatus: 'Track Status',
+    depotDashboard: 'Depot Dashboard',
+    help: 'Help',
+    inbox: 'Inbox',
+    portalSubtitle: 'Passenger Grievance Portal',
+    selectLanguage: 'Language',
+
+    heroTitle: 'Official Public Transport Passenger Grievance Portal',
+    heroSubtitle: 'Report bus service issues, conductor conduct, or schedule delays directly to KSRTC Depot Command Operations.',
+    heroBadge: 'Government of Kerala Public Grievance Redressal System',
+    quickReport: 'File a Complaint',
+    trackExisting: 'Track Complaint',
+
+    formTitle: 'Report Incident Details',
+    formSubtitle: 'Submittable in under 60 seconds with automatic SLA calculation.',
+    routeLabel: '1. Route / Bus Service',
+    routePlaceholder: 'Type route name or code (e.g. RT-101)...',
+    categoryLabel: '2. Grievance Category',
+    categoryPlaceholder: '-- Select Category --',
+    locationLabel: '3. Incident Location / Bus Stop',
+    locationPlaceholder: 'e.g. Attingal Bus Stand, Seat 14, or Highway KM 42...',
+    descriptionLabel: '4. Description',
+    descriptionPlaceholder: 'Describe the issue clearly (staff behavior, overcharging amount, driver rashness, etc.)...',
+    evidenceLabel: '5. Photo / Ticket Evidence (Optional)',
+    emailLabel: '6. Passenger Email',
+    emailPlaceholder: 'e.g. passenger@gmail.com (Required to receive email receipt)',
+    submitBtn: 'Submit Grievance Now',
+    submittingBtn: 'Registering...',
+
+    similarGrievanceTitle: '⚠️ Similar Active Grievance Found',
+    similarGrievanceNotice: 'An open complaint was recently registered on this route.',
+    attachToTicketBtn: '🔗 Attach to Existing Ticket',
+    newTicketBtn: 'File as New Ticket',
+    ticketRegistered: 'Official Reference Issued',
+    refCodeLabel: 'Reference Tracking Code',
+    copyRefBtn: 'Copy Reference',
+    copiedMsg: 'Copied to Clipboard!',
+    trackLiveStatusBtn: 'Track Live Status',
+    submitAnotherBtn: 'Submit Another Grievance',
+
+    totalComplaints: 'Total Complaints',
+    submitted: 'Submitted',
+    inProgress: 'In Progress',
+    resolved: 'Resolved',
+    slaEscalated: 'SLA Escalated',
+    needsAttention: 'Needs Attention (Priority Ranked)',
+    trendAlertsTitle: 'Repeated Route Issues & Cluster Alerts',
+    filterRouteTickets: 'Filter Route Tickets',
+  },
+  ml: {
+    reportGrievance: 'പരാതി നൽകുക',
+    trackStatus: 'സ്റ്റാറ്റസ് പരിശോധിക്കുക',
+    depotDashboard: 'ഡിപ്പോ ഡാഷ്‌ബോർഡ്',
+    help: 'സഹായം',
+    inbox: 'ഇൻബോക്സ്',
+    portalSubtitle: 'യാത്രക്കാരുടെ പരാതി പരിഹാര പോർട്ടൽ',
+    selectLanguage: 'ഭാഷ',
+
+    heroTitle: 'കെ.എസ്.ആർ.ടി.സി യാത്രക്കാരുടെ ഔദ്യോഗിക പരാതി പോർട്ടൽ',
+    heroSubtitle: 'ബസ് സർവീസ് തടസ്സങ്ങൾ, ജീവനക്കാരുടെ പെരുമാറ്റം, സമയം പാലിക്കായ്മ എന്നിവ ഡിപ്പോ കമാൻഡ് ഓപ്പറേഷൻസിലേക്ക് നേരിട്ട് അറിയിക്കുക.',
+    heroBadge: 'കേരള സർക്കാർ പൊതു പരാതി പരിഹാര സംവിധാനം',
+    quickReport: 'പരാതി നൽകുക',
+    trackExisting: 'പരാതി പരിശോധിക്കുക',
+
+    formTitle: 'പരാതി വിവരങ്ങൾ നൽകുക',
+    formSubtitle: '60 സെക്കൻഡിനുള്ളിൽ ഓട്ടോമാറ്റിക് SLA മുൻഗണനയോടെ പരാതി നൽകാം.',
+    routeLabel: '1. ബസ് റൂട്ട് / സർവീസ്',
+    routePlaceholder: 'റൂട്ടിന്റെ പേര് അല്ലെങ്കിൽ കോഡ് നൽകുക (ഉദാ: RT-101)...',
+    categoryLabel: '2. പരാതി വിഭാഗം',
+    categoryPlaceholder: '-- വിഭാഗം തിരഞ്ഞെടുക്കുക --',
+    locationLabel: '3. സംഭവം നടന്ന സ്ഥലം / ബസ് സ്റ്റോപ്പ്',
+    locationPlaceholder: 'ഉദാ: ആറ്റിങ്ങൽ സ്റ്റാൻഡ്, സീറ്റ് 14...',
+    descriptionLabel: '4. വിവരണം',
+    descriptionPlaceholder: 'പ്രശ്നം വ്യക്തമായി വിവരിക്കുക (ജീവനക്കാരുടെ പെരുമാറ്റം, അധിക ചാർജ്ജ്, അമിത വേഗത...)...',
+    evidenceLabel: '5. ടിക്കറ്റ് / ഫോട്ടോ തെളിവ് (ഓപ്ഷണൽ)',
+    emailLabel: '6. യാത്രക്കാരന്റെ ഇമെയിൽ',
+    emailPlaceholder: 'ഉദാ: passenger@gmail.com (കൺഫർമേഷൻ ഇമെയിൽ ലഭിക്കാൻ ആവശ്യമാണ്)',
+    submitBtn: 'പരാതി സമർപ്പിക്കുക',
+    submittingBtn: 'രേഖപ്പെടുത്തുന്നു...',
+
+    similarGrievanceTitle: '⚠️ സമാനമായ പരാതി നിലവിലുണ്ട്',
+    similarGrievanceNotice: 'ഈ റൂട്ടിൽ സമാനമായ പരാതി നേരത്തെ രേഖപ്പെടുത്തിയിട്ടുണ്ട്.',
+    attachToTicketBtn: '🔗 നിലവിലുള്ള ടിക്കറ്റുമായി ബന്ധിപ്പിക്കുക',
+    newTicketBtn: 'പുതിയ പരാതിയായി നൽകുക',
+    ticketRegistered: 'ഔദ്യോഗിക റഫറൻസ് നമ്പർ നൽകി',
+    refCodeLabel: 'റഫറൻസ് ട്രാക്കിംഗ് കോഡ്',
+    copyRefBtn: 'കോപ്പി ചെയ്യുക',
+    copiedMsg: 'ക്ലിപ്പ്ബോർഡിലേക്ക് കോപ്പി ചെയ്തു!',
+    trackLiveStatusBtn: 'ലൈവ് സ്റ്റാറ്റസ് കാണുക',
+    submitAnotherBtn: 'മറ്റൊരു പരാതി നൽകുക',
+
+    totalComplaints: 'ആകെ പരാതികൾ',
+    submitted: 'സമർപ്പിച്ചവ',
+    inProgress: 'നടപടിയിൽ',
+    resolved: 'പരിഹരിച്ചവ',
+    slaEscalated: 'SLA സമയം കഴിഞ്ഞവ',
+    needsAttention: 'മുൻഗണന ആവശ്യമുള്ളവ',
+    trendAlertsTitle: 'ആവർത്തിച്ചുള്ള റൂട്ട് പ്രശ്നങ്ങൾ & അലേർട്ടുകൾ',
+    filterRouteTickets: 'റൂട്ട് ടിക്കറ്റുകൾ കാണുക',
+  },
+  hi: {
+    reportGrievance: 'शिकायत दर्ज करें',
+    trackStatus: 'स्थिति जांचें',
+    depotDashboard: 'डिपो डैशबोर्ड',
+    help: 'सहायता',
+    inbox: 'इनबॉक्स',
+    portalSubtitle: 'यात्री शिकायत निवारण पोर्टल',
+    selectLanguage: 'भाषा',
+
+    heroTitle: 'केएसआरटीसी यात्री शिकायत निवारण आधिकारिक पोर्टल',
+    heroSubtitle: 'बस सेवा संबंधी समस्याएं, कंडक्टर का व्यवहार या देरी की शिकायत सीधे डिपो कमांड ऑपरेशंस को दर्ज करें।',
+    heroBadge: 'केरल सरकार जन शिकायत निवारण प्रणाली',
+    quickReport: 'शिकायत दर्ज करें',
+    trackExisting: 'शिकायत ट्रैक करें',
+
+    formTitle: 'घटना का विवरण दें',
+    formSubtitle: '60 सेकंड से कम समय में स्वचालित SLA ट्रैकिंग के साथ शिकायत दर्ज करें।',
+    routeLabel: '1. बस रूट / सेवा',
+    routePlaceholder: 'रूट का नाम या कोड टाइप करें (जैसे RT-101)...',
+    categoryLabel: '2. शिकायत श्रेणी',
+    categoryPlaceholder: '-- श्रेणी चुनें --',
+    locationLabel: '3. घटना का स्थान / बस स्टॉप',
+    locationPlaceholder: 'जैसे आतिंगल बस स्टैंड, सीट 14...',
+    descriptionLabel: '4. विवरण',
+    descriptionPlaceholder: 'समस्या का स्पष्ट विवरण दें (कर्मचारी का व्यवहार, अधिक किराया, तेज गति आदि)...',
+    evidenceLabel: '5. टिकट / फोटो साक्ष्य (वैकल्पिक)',
+    emailLabel: '6. यात्री का ईमेल',
+    emailPlaceholder: 'जैसे passenger@gmail.com (ईमेल रसीद प्राप्त करने के लिए आवश्यक)',
+    submitBtn: 'शिकायत जमा करें',
+    submittingBtn: 'दर्ज हो रहा है...',
+
+    similarGrievanceTitle: '⚠️ समान शिकायत पहले से मौजूद है',
+    similarGrievanceNotice: 'इस रूट पर हाल ही में एक समान शिकायत दर्ज की गई है।',
+    attachToTicketBtn: '🔗 मौजूदा टिकट से जोड़ें',
+    newTicketBtn: 'नई शिकायत के रूप में दर्ज करें',
+    ticketRegistered: 'आधिकारिक संदर्भ कोड जारी किया गया',
+    refCodeLabel: 'संदर्भ ट्रैकिंग कोड',
+    copyRefBtn: 'कॉपी करें',
+    copiedMsg: 'क्लिपबोर्ड पर कॉपी हो गया!',
+    trackLiveStatusBtn: 'लाइव स्थिति देखें',
+    submitAnotherBtn: 'दूसरी शिकायत दर्ज करें',
+
+    totalComplaints: 'कुल शिकायतें',
+    submitted: 'दर्ज शिकायतें',
+    inProgress: 'प्रक्रियाधीन',
+    resolved: 'निपटाया गया',
+    slaEscalated: 'समय सीमा पार (Escalated)',
+    needsAttention: 'प्राथमिकता वाली शिकायतें',
+    trendAlertsTitle: 'बार-बार होने वाली रूट समस्याएं और अलर्ट',
+    filterRouteTickets: 'रूट टिकट फ़िल्टर करें',
+  },
+};
+
+interface LanguageContextType {
+  language: Language;
+  setLanguage: (lang: Language) => void;
+  t: Translations;
+}
+
+const LanguageContext = createContext<LanguageContextType>({
+  language: 'en',
+  setLanguage: () => {},
+  t: translations.en,
+});
+
+export const LanguageProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+  const [language, setLanguageState] = useState<Language>('en');
+
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const savedLang = localStorage.getItem('aanavandi_lang') as Language;
+      if (savedLang && (savedLang === 'en' || savedLang === 'ml' || savedLang === 'hi')) {
+        setLanguageState(savedLang);
+      }
+    }
+  }, []);
+
+  const setLanguage = (lang: Language) => {
+    setLanguageState(lang);
+    if (typeof window !== 'undefined') {
+      localStorage.setItem('aanavandi_lang', lang);
+    }
+  };
+
+  return (
+    <LanguageContext.Provider value={{ language, setLanguage, t: translations[language] }}>
+      {children}
+    </LanguageContext.Provider>
+  );
+};
+
+export const useLanguage = () => useContext(LanguageContext);

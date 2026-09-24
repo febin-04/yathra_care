@@ -5,8 +5,12 @@ import { usePathname } from 'next/navigation';
 import { Bus, FileText, LayoutDashboard, Bell, FastForward, Search, HelpCircle } from 'lucide-react';
 import { useState } from 'react';
 
+import { useLanguage, Language } from '@/context/LanguageContext';
+import { Globe } from 'lucide-react';
+
 export default function Header() {
   const pathname = usePathname();
+  const { language, setLanguage, t } = useLanguage();
   const [simulating, setSimulating] = useState(false);
   const [systemMessage, setSystemMessage] = useState<string | null>(null);
 
@@ -48,12 +52,12 @@ export default function Header() {
               className="h-8 sm:h-9 w-auto object-contain group-hover:scale-105 transition-transform shrink-0"
             />
             <div className="hidden md:block border-l border-white/20 pl-3">
-              <p className="text-[11px] text-slate-300/80 font-medium tracking-wide">Passenger Grievance Portal</p>
+              <p className="text-[11px] text-slate-300/80 font-medium tracking-wide">{t.portalSubtitle}</p>
             </div>
           </Link>
 
           {/* Navigation Links */}
-          <nav className="flex items-center space-x-1 sm:space-x-2">
+          <nav className="flex items-center space-x-1.5 sm:space-x-2">
             <Link
               href="/#form"
               onClick={(e) => {
@@ -72,7 +76,7 @@ export default function Header() {
               }`}
             >
               <FileText className="w-4 h-4 text-desktop-accent" />
-              <span>Report Grievance</span>
+              <span>{t.reportGrievance}</span>
             </Link>
 
             <Link
@@ -84,7 +88,7 @@ export default function Header() {
               }`}
             >
               <Search className="w-4 h-4 text-amber-400" />
-              <span>Track Status</span>
+              <span>{t.trackStatus}</span>
             </Link>
 
             <Link
@@ -96,7 +100,7 @@ export default function Header() {
               }`}
             >
               <LayoutDashboard className="w-4 h-4 text-emerald-400" />
-              <span>Depot Dashboard</span>
+              <span>{t.depotDashboard}</span>
             </Link>
 
             <Link
@@ -108,7 +112,7 @@ export default function Header() {
               }`}
             >
               <HelpCircle className="w-4 h-4 text-indigo-400" />
-              <span>Help</span>
+              <span>{t.help}</span>
             </Link>
 
             <Link
@@ -120,15 +124,52 @@ export default function Header() {
               }`}
             >
               <Bell className="w-4 h-4 text-blue-400" />
-              <span className="hidden md:inline">Inbox</span>
+              <span className="hidden md:inline">{t.inbox}</span>
             </Link>
+
+            {/* Language Switcher Buttons */}
+            <div className="flex items-center bg-slate-800 p-1 rounded-xl border border-slate-700 shadow-inner">
+              <button
+                onClick={() => setLanguage('en')}
+                title="English"
+                className={`px-2 py-1 text-[11px] font-extrabold rounded-lg transition-all cursor-pointer ${
+                  language === 'en'
+                    ? 'bg-desktop-hero text-white shadow-sm'
+                    : 'text-slate-300 hover:text-white'
+                }`}
+              >
+                EN
+              </button>
+              <button
+                onClick={() => setLanguage('ml')}
+                title="മലയാളം (Malayalam)"
+                className={`px-2 py-1 text-[11px] font-extrabold rounded-lg transition-all cursor-pointer ${
+                  language === 'ml'
+                    ? 'bg-desktop-hero text-white shadow-sm'
+                    : 'text-slate-300 hover:text-white'
+                }`}
+              >
+                മലയാളം
+              </button>
+              <button
+                onClick={() => setLanguage('hi')}
+                title="हिन्दी (Hindi)"
+                className={`px-2 py-1 text-[11px] font-extrabold rounded-lg transition-all cursor-pointer ${
+                  language === 'hi'
+                    ? 'bg-desktop-hero text-white shadow-sm'
+                    : 'text-slate-300 hover:text-white'
+                }`}
+              >
+                हिन्दी
+              </button>
+            </div>
 
             {/* Dev Action Buttons */}
             <button
               onClick={handleSimulateTime}
               disabled={simulating}
               title="Fast forward +12h to trigger SLA escalation engine for demo"
-              className="px-3 py-2 rounded-xl text-xs font-black bg-desktop-accent hover:bg-desktop-accentHover text-white transition-all flex items-center space-x-1 disabled:opacity-50 shadow-md uppercase tracking-wider cursor-pointer"
+              className="px-2.5 py-2 rounded-xl text-xs font-black bg-desktop-accent hover:bg-desktop-accentHover text-white transition-all flex items-center space-x-1 disabled:opacity-50 shadow-md uppercase tracking-wider cursor-pointer"
             >
               <FastForward className={`w-3.5 h-3.5 ${simulating ? 'animate-bounce' : ''}`} />
               <span className="hidden md:inline">{simulating ? '+12h...' : '+12h SLA'}</span>

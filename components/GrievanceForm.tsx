@@ -31,11 +31,14 @@ import {
 import { classifyDescriptionLocal } from '@/lib/classifier';
 import Link from 'next/link';
 
+import { useLanguage } from '@/context/LanguageContext';
+
 interface GrievanceFormProps {
   initialRouteId?: string;
 }
 
 export default function GrievanceForm({ initialRouteId }: GrievanceFormProps = {}) {
+  const { t } = useLanguage();
   const [routes, setRoutes] = useState<Route[]>([]);
   const [categories, setCategories] = useState<Category[]>([]);
   const [depots, setDepots] = useState<Depot[]>([]);
@@ -577,9 +580,9 @@ export default function GrievanceForm({ initialRouteId }: GrievanceFormProps = {
                   <span className="text-[11px] font-black uppercase tracking-widest text-desktop-hero bg-desktop-bgTint px-3 py-1 rounded-full">
                     Grievance Form
                   </span>
-                  <h2 className="text-2xl font-black text-slate-900 mt-2 tracking-tight">Report Incident Details</h2>
+                  <h2 className="text-2xl font-black text-slate-900 mt-2 tracking-tight">{t.formTitle}</h2>
                   <p className="text-xs text-slate-500 font-medium mt-0.5">
-                    Submittable in under 60 seconds with automatic SLA calculation.
+                    {t.formSubtitle}
                   </p>
                 </div>
 
@@ -594,7 +597,7 @@ export default function GrievanceForm({ initialRouteId }: GrievanceFormProps = {
                   {/* 1. Route / Bus Autocomplete */}
                   <div className="relative" ref={desktopDropdownRef}>
                     <label className="block text-xs font-extrabold text-slate-700 uppercase tracking-wider mb-1.5">
-                      1. Route / Bus Service
+                      {t.routeLabel}
                     </label>
                     <div className="relative">
                       <Bus className="w-4 h-4 text-slate-400 absolute left-3.5 top-3.5" />
@@ -607,7 +610,7 @@ export default function GrievanceForm({ initialRouteId }: GrievanceFormProps = {
                           setShowRouteDropdown(true);
                         }}
                         onFocus={() => setShowRouteDropdown(true)}
-                        placeholder="Type route name or code (e.g. RT-101)..."
+                        placeholder={t.routePlaceholder}
                         className="w-full bg-slate-50 border border-slate-300 text-slate-900 rounded-xl py-3 pl-10 pr-9 text-xs font-semibold focus:outline-none focus:ring-2 focus:ring-desktop-hero"
                       />
                       {selectedRouteId ? (
@@ -960,7 +963,7 @@ export default function GrievanceForm({ initialRouteId }: GrievanceFormProps = {
                       className="w-full bg-desktop-accent hover:bg-desktop-accentHover text-white py-4 px-6 rounded-xl font-black text-sm uppercase tracking-wide transition-all shadow-lg hover:shadow-xl flex items-center justify-center space-x-2 disabled:opacity-40 disabled:cursor-not-allowed cursor-pointer transform hover:scale-[1.01]"
                     >
                       <Send className="w-4 h-4" />
-                      <span>{submitting ? 'Registering...' : 'Submit Grievance Now'}</span>
+                      <span>{submitting ? t.submittingBtn : t.submitBtn}</span>
                     </button>
                     <p className="text-[10px] text-slate-400 text-center font-medium">
                       Instant reference generated • 100% Offline SQLite database
