@@ -199,7 +199,7 @@ export default function EntryPage() {
                 </div>
 
                 <div>
-                  <h3 className="text-xl md:text-2xl font-heading text-white tracking-tight drop-shadow-sm">Have a Passenger Grievance?</h3>
+                  <h3 className="text-xl md:text-2xl font-heading text-white tracking-tight drop-shadow-sm">{t.haveGrievanceTitle}</h3>
                 </div>
 
                 {/* Primary Button: Drop Your Problem Here */}
@@ -208,7 +208,7 @@ export default function EntryPage() {
                   className="w-full bg-desktop-accent hover:bg-desktop-accentHover text-white py-4 px-6 rounded-2xl font-black text-xs uppercase tracking-wider transition-all shadow-xl hover:shadow-2xl flex items-center justify-center space-x-2 cursor-pointer transform hover:scale-105 block text-center"
                 >
                   <Send className="w-4 h-4" />
-                  <span>DROP YOUR PROBLEM HERE</span>
+                  <span>{t.dropProblemBtn}</span>
                 </a>
               </div>
             </div>
@@ -221,7 +221,7 @@ export default function EntryPage() {
                 {/* Mode 1: Quick Route Selection */}
                 <div className="md:col-span-5 space-y-2">
                   <label className="block text-[11px] font-black text-white/90 uppercase tracking-widest drop-shadow-sm">
-                    LODGE COMPLAINT FOR BUS ROUTE
+                    {t.lodgeComplaintHeader}
                   </label>
                   <form onSubmit={handleQuickRouteSubmit} className="flex gap-2 relative">
                     <div className="flex-1 relative" ref={quickRouteDropdownRef}>
@@ -233,7 +233,7 @@ export default function EntryPage() {
                         <span className="truncate pr-2">
                           {selectedQuickRoute
                             ? `${selectedQuickRoute}: ${routesList.find((r) => r.id === selectedQuickRoute)?.name || ''}`
-                            : '-- Select Bus Route --'}
+                            : t.selectBusRouteDropdown}
                         </span>
                         <ChevronDown className={`w-4 h-4 text-slate-500 shrink-0 transition-transform duration-200 ${showQuickRouteDropdown ? 'rotate-180' : ''}`} />
                       </button>
@@ -250,7 +250,7 @@ export default function EntryPage() {
                               !selectedQuickRoute ? 'bg-blue-50/70 text-blue-700 font-bold' : 'text-slate-700'
                             }`}
                           >
-                            <span>-- Select Bus Route --</span>
+                            <span>{t.selectBusRouteDropdown}</span>
                             {!selectedQuickRoute && <CheckCircle2 className="w-3.5 h-3.5 text-blue-600" />}
                           </div>
                           {routesList.map((r) => (
@@ -278,34 +278,34 @@ export default function EntryPage() {
                       type="submit"
                       className="bg-desktop-accent hover:bg-desktop-accentHover text-white px-5 py-3 rounded-2xl text-xs font-black uppercase tracking-wider transition-all shadow-md shrink-0 cursor-pointer"
                     >
-                      GO TO FORM
+                      {t.goToFormBtn}
                     </button>
                   </form>
                 </div>
 
                 {/* Divider */}
                 <div className="hidden md:flex md:col-span-2 justify-center items-center text-white/90 font-bold text-xs drop-shadow-sm">
-                  OR
+                  {t.orDivider}
                 </div>
 
                 {/* Mode 2: Quick Reference Tracker */}
                 <div className="md:col-span-5 space-y-2">
                   <label className="block text-[11px] font-black text-white/90 uppercase tracking-widest drop-shadow-sm">
-                    QUICK TRACK REFERENCE CODE
+                    {t.quickTrackHeader}
                   </label>
                   <form onSubmit={handleQuickSearch} className="flex gap-2">
                     <input
                       type="text"
                       value={searchRef}
                       onChange={(e) => setSearchRef(e.target.value)}
-                      placeholder="o. g.  R1101-28260922-0001"
+                      placeholder={t.quickTrackPlaceholder}
                       className="flex-1 bg-white text-slate-900 border border-white/40 rounded-2xl px-4 py-3 text-xs font-mono focus:outline-none focus:ring-2 focus:ring-desktop-accent shadow-sm placeholder:text-slate-400"
                     />
                     <button
                       type="submit"
                       className="bg-[#1231a2] hover:bg-desktop-hero text-white px-6 py-3 rounded-2xl text-xs font-bold transition-all shadow-md shrink-0 cursor-pointer"
                     >
-                      Track
+                      {t.trackBtn}
                     </button>
                   </form>
                 </div>
@@ -446,24 +446,24 @@ export default function EntryPage() {
           <div className="grid grid-cols-2 gap-3">
             <Link href="#form">
               <Button variant="mobile-primary" size="md" className="w-full text-xs">
-                Report Complaint
+                {t.quickReport}
               </Button>
             </Link>
             <Link href="/track">
               <Button variant="outline" size="md" className="w-full text-xs border-mobile-header text-mobile-header">
-                Track Status
+                {t.trackStatus}
               </Button>
             </Link>
           </div>
 
           {/* Mobile Card List Rows (YATRE Profile/Settings Card Style) */}
           <div className="space-y-3">
-            <h3 className="text-xs font-black uppercase tracking-wider text-slate-500 px-1">Quick Portals</h3>
+            <h3 className="text-xs font-black uppercase tracking-wider text-slate-500 px-1">{t.quickPortals}</h3>
 
             <Card
               variant="row"
-              title="Passenger Grievance Form"
-              subtitle="File incident report directly"
+              title={t.portal1Title}
+              subtitle={t.portal1Subtitle}
               leadingIcon={<FileText className="w-5 h-5 text-mobile-header" />}
               onClick={() => {
                 const el = document.getElementById('form');
@@ -473,16 +473,16 @@ export default function EntryPage() {
 
             <Card
               variant="row"
-              title="Public Status Lookup"
-              subtitle="Track complaint status by reference code"
+              title={t.portal2Title}
+              subtitle={t.portal2Subtitle}
               leadingIcon={<Search className="w-5 h-5 text-amber-500" />}
               onClick={() => router.push('/track')}
             />
 
             <Card
               variant="row"
-              title="Depot Management View"
-              subtitle="Executive analytics & SLA engine"
+              title={t.portal3Title}
+              subtitle={t.portal3Subtitle}
               leadingIcon={<LayoutDashboard className="w-5 h-5 text-emerald-500" />}
               onClick={() => router.push('/dashboard')}
             />

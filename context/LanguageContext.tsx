@@ -20,6 +20,16 @@ export interface Translations {
   heroBadge: string;
   quickReport: string;
   trackExisting: string;
+  haveGrievanceTitle: string;
+  dropProblemBtn: string;
+  lodgeComplaintHeader: string;
+  selectBusRouteDropdown: string;
+  goToFormBtn: string;
+  orDivider: string;
+  quickTrackHeader: string;
+  quickTrackPlaceholder: string;
+  trackBtn: string;
+  quickPortals: string;
 
   // Grievance Form
   grievanceFormBadge: string;
@@ -171,6 +181,16 @@ export const translations: Record<Language, Translations> = {
     heroBadge: 'Government of Kerala Public Grievance Redressal System',
     quickReport: 'File a Complaint',
     trackExisting: 'Track Complaint',
+    haveGrievanceTitle: 'Have a Passenger Grievance?',
+    dropProblemBtn: 'DROP YOUR PROBLEM HERE',
+    lodgeComplaintHeader: 'LODGE COMPLAINT FOR BUS ROUTE',
+    selectBusRouteDropdown: '-- Select Bus Route --',
+    goToFormBtn: 'GO TO FORM',
+    orDivider: 'OR',
+    quickTrackHeader: 'QUICK TRACK REFERENCE CODE',
+    quickTrackPlaceholder: 'e.g.  R1101-28260922-0001',
+    trackBtn: 'Track',
+    quickPortals: 'Quick Portals',
 
     grievanceFormBadge: 'Grievance Form',
     formTitle: 'Report Incident Details',
@@ -287,6 +307,16 @@ export const translations: Record<Language, Translations> = {
     heroBadge: 'കേരള സർക്കാർ പൊതു പരാതി പരിഹാര സംവിധാനം',
     quickReport: 'പരാതി നൽകുക',
     trackExisting: 'പരാതി പരിശോധിക്കുക',
+    haveGrievanceTitle: 'യാത്രക്കാരൻ എന്ന നിലയിൽ പരാതിയുണ്ടോ?',
+    dropProblemBtn: 'ഇവിടെ പരാതി സമർപ്പിക്കുക',
+    lodgeComplaintHeader: 'ബസ് റൂട്ടിൽ പരാതി നൽകുക',
+    selectBusRouteDropdown: '-- ബസ് റൂട്ട് തിരഞ്ഞെടുക്കുക --',
+    goToFormBtn: 'ഫോമിലേക്ക് പോകുക',
+    orDivider: 'അല്ലെങ്കിൽ',
+    quickTrackHeader: 'റഫറൻസ് നമ്പർ അടിച്ച് കാണുക',
+    quickTrackPlaceholder: 'ഉദാ:  R1101-28260922-0001',
+    trackBtn: 'പരിശോധിക്കുക',
+    quickPortals: 'ദ്രുത പോർട്ടലുകൾ',
 
     grievanceFormBadge: 'പരാതി ഫോം',
     formTitle: 'പരാതി വിവരങ്ങൾ നൽകുക',
@@ -403,6 +433,16 @@ export const translations: Record<Language, Translations> = {
     heroBadge: 'केरल सरकार जन शिकायत निवारण प्रणाली',
     quickReport: 'शिकायत दर्ज करें',
     trackExisting: 'शिकायत ट्रैक करें',
+    haveGrievanceTitle: 'क्या आपको कोई यात्री शिकायत है?',
+    dropProblemBtn: 'अपनी समस्या यहां दर्ज करें',
+    lodgeComplaintHeader: 'बस रूट के लिए शिकायत दर्ज करें',
+    selectBusRouteDropdown: '-- बस रूट चुनें --',
+    goToFormBtn: 'फॉर्म पर जाएं',
+    orDivider: 'या',
+    quickTrackHeader: 'संदर्भ कोड द्वारा त्वरित स्थिति जांचें',
+    quickTrackPlaceholder: 'जैसे  R1101-28260922-0001',
+    trackBtn: 'ट्रैक करें',
+    quickPortals: 'त्वरित पोर्टल',
 
     grievanceFormBadge: 'शिकायत फॉर्म',
     formTitle: 'घटना का विवरण दें',
