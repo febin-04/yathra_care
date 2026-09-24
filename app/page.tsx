@@ -323,21 +323,21 @@ export default function EntryPage() {
         <div className="hidden md:block space-y-4">
           <div className="flex justify-between items-center">
             <div>
-              <h2 className="text-xl font-black text-slate-900 tracking-tight">System Operational Portals</h2>
-              <p className="text-xs text-slate-500 font-medium">Select an action portal to proceed</p>
+              <h2 className="text-xl font-black text-slate-900 tracking-tight">{t.systemPortalsTitle}</h2>
+              <p className="text-xs text-slate-500 font-medium">{t.systemPortalsSubtitle}</p>
             </div>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             {/* Card 1: Report Complaint */}
             <Card
-              title="Report a Grievance"
-              subtitle="Submit incident details in under 60 seconds"
+              title={t.portal1Title}
+              subtitle={t.portal1Subtitle}
               className="hover:border-desktop-hero transition-all group hover:-translate-y-1"
               footer={
                 <Link href="#form">
                   <Button variant="accent" size="sm" className="w-full">
-                    Open Submission Form
+                    {t.portal1Btn}
                   </Button>
                 </Link>
               }
@@ -347,22 +347,22 @@ export default function EntryPage() {
                   <FileText className="w-7 h-7" />
                 </div>
                 <div className="text-xs text-slate-600 space-y-1">
-                  <p className="font-semibold">• Route Autocomplete</p>
-                  <p className="font-semibold">• Auto Depot Mapping</p>
-                  <p className="font-semibold">• Offline Local Storage Queue</p>
+                  <p className="font-semibold">{t.portal1Feature1}</p>
+                  <p className="font-semibold">{t.portal1Feature2}</p>
+                  <p className="font-semibold">{t.portal1Feature3}</p>
                 </div>
               </div>
             </Card>
 
             {/* Card 2: Track Status */}
             <Card
-              title="Track Live Status"
-              subtitle="Lookup grievance progress & SLA history"
+              title={t.portal2Title}
+              subtitle={t.portal2Subtitle}
               className="hover:border-desktop-hero transition-all group hover:-translate-y-1"
               footer={
                 <Link href="/track">
                   <Button variant="primary" size="sm" className="w-full">
-                    Track Complaint
+                    {t.portal2Btn}
                   </Button>
                 </Link>
               }
@@ -372,22 +372,22 @@ export default function EntryPage() {
                   <Search className="w-7 h-7" />
                 </div>
                 <div className="text-xs text-slate-600 space-y-1">
-                  <p className="font-semibold">• Workflow Stepper</p>
-                  <p className="font-semibold">• State Transition Audit Log</p>
-                  <p className="font-semibold">• Post-Resolution Feedback</p>
+                  <p className="font-semibold">{t.portal2Feature1}</p>
+                  <p className="font-semibold">{t.portal2Feature2}</p>
+                  <p className="font-semibold">{t.portal2Feature3}</p>
                 </div>
               </div>
             </Card>
 
             {/* Card 3: Depot Dashboard */}
             <Card
-              title="Depot Dashboard"
-              subtitle="Executive analytics & SLA engine controls"
+              title={t.portal3Title}
+              subtitle={t.portal3Subtitle}
               className="hover:border-desktop-hero transition-all group hover:-translate-y-1"
               footer={
                 <Link href="/dashboard">
                   <Button variant="outline" size="sm" className="w-full">
-                    Open Operations Dashboard
+                    {t.portal3Btn}
                   </Button>
                 </Link>
               }
@@ -397,9 +397,9 @@ export default function EntryPage() {
                   <LayoutDashboard className="w-7 h-7" />
                 </div>
                 <div className="text-xs text-slate-600 space-y-1">
-                  <p className="font-semibold">• Priority Needs Attention Section</p>
-                  <p className="font-semibold">• SQL Privacy Redaction</p>
-                  <p className="font-semibold">• SLA Escalation Engine</p>
+                  <p className="font-semibold">{t.portal3Feature1}</p>
+                  <p className="font-semibold">{t.portal3Feature2}</p>
+                  <p className="font-semibold">{t.portal3Feature3}</p>
                 </div>
               </div>
             </Card>

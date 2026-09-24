@@ -59,6 +59,28 @@ export interface Translations {
   needsAttention: string;
   trendAlertsTitle: string;
   filterRouteTickets: string;
+
+  // System Portals Section
+  systemPortalsTitle: string;
+  systemPortalsSubtitle: string;
+  portal1Title: string;
+  portal1Subtitle: string;
+  portal1Feature1: string;
+  portal1Feature2: string;
+  portal1Feature3: string;
+  portal1Btn: string;
+  portal2Title: string;
+  portal2Subtitle: string;
+  portal2Feature1: string;
+  portal2Feature2: string;
+  portal2Feature3: string;
+  portal2Btn: string;
+  portal3Title: string;
+  portal3Subtitle: string;
+  portal3Feature1: string;
+  portal3Feature2: string;
+  portal3Feature3: string;
+  portal3Btn: string;
 }
 
 export const translations: Record<Language, Translations> = {
@@ -112,6 +134,27 @@ export const translations: Record<Language, Translations> = {
     needsAttention: 'Needs Attention (Priority Ranked)',
     trendAlertsTitle: 'Repeated Route Issues & Cluster Alerts',
     filterRouteTickets: 'Filter Route Tickets',
+
+    systemPortalsTitle: 'System Operational Portals',
+    systemPortalsSubtitle: 'Select an action portal to proceed',
+    portal1Title: 'Report a Grievance',
+    portal1Subtitle: 'Submit incident details in under 60 seconds',
+    portal1Feature1: '• Route Autocomplete',
+    portal1Feature2: '• Auto Depot Mapping',
+    portal1Feature3: '• Offline Local Storage Queue',
+    portal1Btn: 'OPEN SUBMISSION FORM',
+    portal2Title: 'Track Live Status',
+    portal2Subtitle: 'Lookup grievance progress & SLA history',
+    portal2Feature1: '• Workflow Stepper',
+    portal2Feature2: '• State Transition Audit Log',
+    portal2Feature3: '• Post-Resolution Feedback',
+    portal2Btn: 'Track Complaint',
+    portal3Title: 'Depot Dashboard',
+    portal3Subtitle: 'Executive analytics & SLA engine controls',
+    portal3Feature1: '• Priority Needs Attention Section',
+    portal3Feature2: '• SQL Privacy Redaction',
+    portal3Feature3: '• SLA Escalation Engine',
+    portal3Btn: 'Open Operations Dashboard',
   },
   ml: {
     reportGrievance: 'പരാതി നൽകുക',
@@ -163,6 +206,27 @@ export const translations: Record<Language, Translations> = {
     needsAttention: 'മുൻഗണന ആവശ്യമുള്ളവ',
     trendAlertsTitle: 'ആവർത്തിച്ചുള്ള റൂട്ട് പ്രശ്നങ്ങൾ & അലേർട്ടുകൾ',
     filterRouteTickets: 'റൂട്ട് ടിക്കറ്റുകൾ കാണുക',
+
+    systemPortalsTitle: 'പ്രവർത്തന പോർട്ടലുകൾ',
+    systemPortalsSubtitle: 'മുമ്പോട്ട് പോകാൻ ഒരു പോർട്ടൽ തിരഞ്ഞെടുക്കുക',
+    portal1Title: 'പരാതി സമർപ്പിക്കുക',
+    portal1Subtitle: '60 സെക്കൻഡിനുള്ളിൽ വിവരങ്ങൾ നൽകുക',
+    portal1Feature1: '• റൂട്ട് ഓട്ടോ കംപ്ലീറ്റ്',
+    portal1Feature2: '• ഓട്ടോ ഡിപ്പോ മാപ്പിംഗ്',
+    portal1Feature3: '• ഓഫ്ലൈൻ ലോക്കൽ സ്റ്റോറേജ് ക്യൂ',
+    portal1Btn: 'ഫോം തുറക്കുക',
+    portal2Title: 'സ്റ്റാറ്റസ് പരിശോധിക്കുക',
+    portal2Subtitle: 'പരാതി നടപടികളും SLA ചരിത്രവും കാണുക',
+    portal2Feature1: '• വർക്ക്ഫ്ലോ സ്റ്റെപ്പർ',
+    portal2Feature2: '• ഓഡിറ്റ് ലോഗ് കാണുക',
+    portal2Feature3: '• പരിഹാര ശേഷമുള്ള ഫീഡ്‌ബാക്ക്',
+    portal2Btn: 'പരാതി പരിശോധിക്കുക',
+    portal3Title: 'ഡിപ്പോ ഡാഷ്‌ബോർഡ്',
+    portal3Subtitle: 'അനലിറ്റിക്സും SLA കൺട്രോളുകളും',
+    portal3Feature1: '• മുൻഗണനാ ക്രമം',
+    portal3Feature2: '• SQL പ്രൈവസി വിവരങ്ങൾ',
+    portal3Feature3: '• SLA എൻജിൻ കൺട്രോൾ',
+    portal3Btn: 'ഡാഷ്‌ബോർഡ് തുറക്കുക',
   },
   hi: {
     reportGrievance: 'शिकायत दर्ज करें',
@@ -214,6 +278,27 @@ export const translations: Record<Language, Translations> = {
     needsAttention: 'प्राथमिकता वाली शिकायतें',
     trendAlertsTitle: 'बार-बार होने वाली रूट समस्याएं और अलर्ट',
     filterRouteTickets: 'रूट टिकट फ़िल्टर करें',
+
+    systemPortalsTitle: 'सिस्टम ऑपरेशंस पोर्टल',
+    systemPortalsSubtitle: 'आगे बढ़ने के लिए एक पोर्टल चुनें',
+    portal1Title: 'शिकायत दर्ज करें',
+    portal1Subtitle: '60 सेकंड में विवरण दर्ज करें',
+    portal1Feature1: '• रूट ऑटो-कंपलीट',
+    portal1Feature2: '• ऑटो डिपो मैपिंग',
+    portal1Feature3: '• ऑफलाइन लोकल स्टोरेज कतार',
+    portal1Btn: 'फॉर्म खोलें',
+    portal2Title: 'लाइव स्थिति ट्रैक करें',
+    portal2Subtitle: 'शिकायत की प्रगति और SLA इतिहास देखें',
+    portal2Feature1: '• वर्कफ़्लो स्टेपर',
+    portal2Feature2: '• स्टेट ऑडिट लॉग',
+    portal2Feature3: '• समाधान के बाद प्रतिक्रिया',
+    portal2Btn: 'शिकायत ट्रैक करें',
+    portal3Title: 'डिपो डैशबोर्ड',
+    portal3Subtitle: 'कार्यकारी विश्लेषिकी और SLA नियंत्रण',
+    portal3Feature1: '• प्राथमिकता अनुभाग',
+    portal3Feature2: '• SQL गोपनीयता सुरक्षा',
+    portal3Feature3: '• SLA एस्केलेशन इंजन',
+    portal3Btn: 'डैशबोर्ड खोलें',
   },
 };
 
