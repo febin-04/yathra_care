@@ -21,7 +21,10 @@ import {
   RefreshCw,
 } from 'lucide-react';
 
+import { useLanguage } from '@/context/LanguageContext';
+
 function TrackContent() {
+  const { t } = useLanguage();
   const searchParams = useSearchParams();
   const initialRef = searchParams.get('ref') || '';
 
@@ -107,7 +110,7 @@ function TrackContent() {
           </div>
           <div>
             <span className="text-[10px] font-black uppercase tracking-widest text-blue-200">Public Status Portal</span>
-            <h1 className="text-2xl font-black text-white tracking-tight">Track Grievance Live Status</h1>
+            <h1 className="text-2xl font-black text-white tracking-tight">{t.trackStatus}</h1>
           </div>
         </div>
 
@@ -128,7 +131,7 @@ function TrackContent() {
             disabled={loading}
             className="bg-desktop-accent hover:bg-desktop-accentHover text-white px-7 py-3.5 rounded-2xl font-black text-xs md:text-sm transition-all shadow-lg hover:shadow-xl flex items-center justify-center gap-2 uppercase tracking-wide disabled:opacity-50 cursor-pointer"
           >
-            <span>{loading ? 'Searching...' : 'Track Status'}</span>
+            <span>{loading ? 'Searching...' : t.trackStatus}</span>
           </button>
         </form>
       </div>

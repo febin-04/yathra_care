@@ -5,6 +5,8 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { FileText, Search, LayoutDashboard, HelpCircle } from 'lucide-react';
 
+import { useLanguage } from '@/context/LanguageContext';
+
 export interface NavItem {
   label: string;
   href: string;
@@ -13,12 +15,13 @@ export interface NavItem {
 
 export const BottomNav: React.FC = () => {
   const pathname = usePathname();
+  const { t } = useLanguage();
 
   const items: NavItem[] = [
-    { label: 'Report', href: '/#form', icon: <FileText className="w-5 h-5" /> },
-    { label: 'Track', href: '/track', icon: <Search className="w-5 h-5" /> },
-    { label: 'Dashboard', href: '/dashboard', icon: <LayoutDashboard className="w-5 h-5" /> },
-    { label: 'Help', href: '/help', icon: <HelpCircle className="w-5 h-5" /> },
+    { label: t.reportGrievance, href: '/#form', icon: <FileText className="w-5 h-5" /> },
+    { label: t.trackStatus, href: '/track', icon: <Search className="w-5 h-5" /> },
+    { label: t.depotDashboard, href: '/dashboard', icon: <LayoutDashboard className="w-5 h-5" /> },
+    { label: t.help, href: '/help', icon: <HelpCircle className="w-5 h-5" /> },
   ];
 
   return (
