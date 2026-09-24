@@ -5,10 +5,12 @@ import {
   AnonymisedComplaint,
   CategoryVolumeStat,
   DepotSLABreachStat,
+  RouteTrendAlert,
 } from '@/lib/management';
 import {
   ShieldCheck,
   AlertOctagon,
+  AlertTriangle,
   Flame,
   TrendingUp,
   Building2,
@@ -34,6 +36,7 @@ export default function ManagementDashboard() {
     statusCounts: Record<string, number>;
     categoryVolumeStats: CategoryVolumeStat[];
     depotSLABreachStats: DepotSLABreachStat[];
+    routeTrendAlerts?: RouteTrendAlert[];
     priorityNeedsAttention: AnonymisedComplaint[];
   } | null>(null);
 
@@ -94,7 +97,7 @@ export default function ManagementDashboard() {
     );
   }
 
-  const { totalComplaints, statusCounts, categoryVolumeStats, depotSLABreachStats, priorityNeedsAttention } = data;
+  const { totalComplaints, statusCounts, categoryVolumeStats, depotSLABreachStats, routeTrendAlerts = [], priorityNeedsAttention } = data;
 
   const openCount = (statusCounts['SUBMITTED'] || 0) + (statusCounts['ACKNOWLEDGED'] || 0) + (statusCounts['IN_PROGRESS'] || 0);
   const escalatedCount = statusCounts['ESCALATED'] || 0;
@@ -203,6 +206,88 @@ export default function ManagementDashboard() {
             </div>
           </div>
         </div>
+
+        {/* REPEATED ROUTE ISSUES TREND ALERTS */}
+        {routeTrendAlerts.length > 0 && (
+          <div className="bg-amber-50 border-2 border-amber-300 rounded-3xl p-6 shadow-xl space-y-4 animate-fade-in">
+            <div className="flex items-center justify-between border-b border-amber-200 pb-3">
+              <div className="flex items-center space-x-3">
+                <div className="w-10 h-10 rounded-2xl bg-amber-500 text-white flex items-center justify-center font-black shadow-md animate-bounce">
+                  <Flame className="w-6 h-6" />
+                </div>
+                <div>
+                  <div className="flex items-center gap-2">
+                    <h3 className="text-lg font-black text-amber-950">Repeated Route Issues & Cluster Alerts</h3>
+                    <span className="bg-amber-200 text-amber-950 text-[10px] font-black px-2.5 py-0.5 rounded-full border border-amber-300 uppercase">
+                      Hotspot Detection Active
+                    </span>
+                  </div>
+                  <p className="text-xs text-amber-800 font-medium mt-0.5">
+                    Routes exhibiting clustered complaints require immediate operational inspection or depot driver coaching.
+                  </p>
+                </div>
+              </div>
+              <span className="text-xs font-black bg-amber-600 text-white px-3 py-1 rounded-full shadow">
+                {routeTrendAlerts.length} Flagged Route Clusters
+              </span>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              {routeTrendAlerts.map((alert) => (
+                <div
+                  key={alert.route_id}
+                  className={`p-4 rounded-2xl border-2 space-y-3 shadow-sm transition-all ${
+                    alert.risk_level === 'HIGH_RISK'
+                      ? 'bg-rose-50 border-rose-300 text-rose-950'
+                      : 'bg-white border-amber-300 text-amber-950'
+                  }`}
+                >
+                  <div className="flex justify-between items-start">
+                    <div className="flex items-center gap-1.5 font-mono font-black text-xs">
+                      <Bus className="w-4 h-4 text-amber-600" />
+                      <span>{alert.route_id}</span>
+                    </div>
+                    <span
+                      className={`text-[10px] font-black px-2.5 py-0.5 rounded-full uppercase ${
+                        alert.risk_level === 'HIGH_RISK'
+                          ? 'bg-rose-600 text-white animate-pulse'
+                          : 'bg-amber-500 text-white'
+                      }`}
+                    >
+                      {alert.risk_level === 'HIGH_RISK' ? 'Critical Hotspot' : 'Repeated Trend'}
+                    </span>
+                  </div>
+
+                  <div>
+                    <h4 className="font-extrabold text-sm text-slate-900 truncate">{alert.route_name}</h4>
+                    <span className="text-[11px] text-slate-500">Depot: {alert.depot_name || 'Central'}</span>
+                  </div>
+
+                  <div className="bg-white/80 p-2.5 rounded-xl border border-amber-200 text-xs space-y-1">
+                    <div className="flex justify-between font-bold text-slate-800">
+                      <span>Recent Complaints:</span>
+                      <strong className="text-rose-600 font-black">{alert.complaint_count} Tickets</strong>
+                    </div>
+                    <div className="text-[11px] text-slate-600">
+                      Primary Issue: <strong className="text-slate-800">{alert.top_category}</strong>
+                    </div>
+                  </div>
+
+                  <div className="pt-1 flex justify-between items-center text-[10px] text-slate-400">
+                    <span>Latest: {new Date(alert.latest_complaint_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</span>
+                    <Link
+                      href={`/dashboard?search=${encodeURIComponent(alert.route_id)}`}
+                      className="text-amber-700 font-extrabold hover:underline flex items-center gap-0.5"
+                    >
+                      <span>Filter Route Tickets</span>
+                      <ArrowUpRight className="w-3 h-3" />
+                    </Link>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
 
         {/* SECTION 2: "NEEDS ATTENTION" PRIORITY RANKED LIST */}
         <div className="bg-white rounded-3xl p-8 shadow-xl border border-slate-200 space-y-6">

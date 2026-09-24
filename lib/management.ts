@@ -36,6 +36,112 @@ export interface DepotSLABreachStat {
   breach_rate: number;
 }
 
+export interface RouteTrendAlert {
+  route_id: string;
+  route_name: string;
+  depot_id: string | null;
+  depot_name: string | null;
+  complaint_count: number;
+  top_category: string;
+  risk_level: 'HIGH_RISK' | 'MEDIUM_RISK' | 'NORMAL';
+  latest_complaint_at: string;
+}
+
+export async function getRouteTrendAlerts(days: number = 7): Promise<RouteTrendAlert[]> {
+  const db = getDb();
+  const dbUrl = process.env.DATABASE_URL;
+  if (dbUrl) {
+    try {
+      const { neon } = await import('@neondatabase/serverless');
+      const sql = neon(dbUrl);
+      const rows = await sql`
+        SELECT 
+          c.route_id,
+          COALESCE(r.name, c.route_id) as route_name,
+          c.depot_id,
+          d.name as depot_name,
+          COUNT(c.id)::int as complaint_count,
+          MAX(c.created_at) as latest_complaint_at
+        FROM complaints c
+        LEFT JOIN routes r ON c.route_id = r.id
+        LEFT JOIN depots d ON c.depot_id = d.id
+        WHERE c.route_id IS NOT NULL 
+          AND c.route_id != ''
+          AND c.status NOT IN ('REJECTED')
+        GROUP BY c.route_id, r.name, c.depot_id, d.name
+        HAVING COUNT(c.id) >= 2
+        ORDER BY complaint_count DESC
+      `;
+      const result: RouteTrendAlert[] = [];
+      for (const r of rows as any[]) {
+        const catRows = await sql`
+          SELECT category, COUNT(*)::int as cnt
+          FROM complaints
+          WHERE route_id = ${r.route_id}
+          GROUP BY category
+          ORDER BY cnt DESC
+          LIMIT 1
+        `;
+        result.push({
+          route_id: r.route_id,
+          route_name: r.route_name || r.route_id,
+          depot_id: r.depot_id,
+          depot_name: r.depot_name || 'Central Depot',
+          complaint_count: Number(r.complaint_count),
+          top_category: catRows[0]?.category || 'General Grievance',
+          risk_level: Number(r.complaint_count) >= 4 ? 'HIGH_RISK' : 'MEDIUM_RISK',
+          latest_complaint_at: r.latest_complaint_at,
+        });
+      }
+      return result;
+    } catch (e) {
+      console.error('Neon SQL trend alerts error:', e);
+    }
+  }
+
+  const rows = db.prepare(`
+    SELECT 
+      c.route_id,
+      COALESCE(r.name, c.route_id) as route_name,
+      c.depot_id,
+      d.name as depot_name,
+      COUNT(c.id) as complaint_count,
+      MAX(c.created_at) as latest_complaint_at
+    FROM complaints c
+    LEFT JOIN routes r ON c.route_id = r.id
+    LEFT JOIN depots d ON c.depot_id = d.id
+    WHERE c.route_id IS NOT NULL 
+      AND c.route_id != ''
+      AND c.status NOT IN ('REJECTED')
+      AND datetime(c.created_at) >= datetime('now', '-${days} days')
+    GROUP BY c.route_id
+    HAVING COUNT(c.id) >= 2
+    ORDER BY complaint_count DESC
+  `).all() as any[];
+
+  return rows.map((r) => {
+    const catRow = db.prepare(`
+      SELECT category, COUNT(*) as cnt
+      FROM complaints
+      WHERE route_id = ?
+      GROUP BY category
+      ORDER BY cnt DESC
+      LIMIT 1
+    `).get(r.route_id) as { category: string } | undefined;
+
+    return {
+      route_id: r.route_id,
+      route_name: r.route_name || r.route_id,
+      depot_id: r.depot_id,
+      depot_name: r.depot_name || 'Central Depot',
+      complaint_count: r.complaint_count,
+      top_category: catRow?.category || 'General Grievance',
+      risk_level: r.complaint_count >= 4 ? 'HIGH_RISK' : 'MEDIUM_RISK',
+      latest_complaint_at: r.latest_complaint_at,
+    };
+  });
+}
+
 export const CATEGORY_SEVERITY_WEIGHTS: Record<string, number> = {
   'Safety & Over-speeding': 5,
   'Staff Misbehaviour & Ticket Overcharging': 4,
@@ -70,9 +176,11 @@ function sanitizeDescriptionText(text: string): string {
  * Redacts complainant identity, phone numbers, exact home addresses, and unverified allegations
  * directly at the DATABASE QUERY layer so sensitive fields never reach the API response payload.
  */
-export function getAnonymisedManagementData(days: number = 7) {
+export async function getAnonymisedManagementData(days: number = 7) {
   const db = getDb();
-  checkAndTriggerSLAEscalations();
+  await checkAndTriggerSLAEscalations();
+
+  const routeTrendAlerts = await getRouteTrendAlerts(days);
 
   // 1. Fetch anonymised complaints using SQL transformation
   const rawRows = db.prepare(`
@@ -201,6 +309,7 @@ export function getAnonymisedManagementData(days: number = 7) {
     statusCounts,
     categoryVolumeStats,
     depotSLABreachStats,
+    routeTrendAlerts,
     priorityNeedsAttention: priorityNeedsAttention.slice(0, 10), // Top 10 Priority items
   };
 }
