@@ -201,6 +201,88 @@ export async function getComplaintById(id: number | string): Promise<Complaint |
   return record;
 }
 
+export async function findDuplicateComplaint(data: {
+  route_id?: string;
+  category: string;
+  description?: string;
+}): Promise<Complaint | null> {
+  const sql = getNeonSql();
+  if (sql) {
+    if (data.route_id && data.category) {
+      const dupRows = await sql`
+        SELECT *
+        FROM complaints 
+        WHERE route_id = ${data.route_id}
+          AND category = ${data.category}
+          AND status NOT IN ('RESOLVED', 'REJECTED')
+          AND created_at >= NOW() - INTERVAL '24 hours'
+        ORDER BY created_at DESC
+        LIMIT 1
+      `;
+      if (dupRows.length > 0) {
+        return dupRows[0] as Complaint;
+      }
+    }
+    if (data.category && data.description && data.description.length > 5) {
+      const cleanDesc = data.description.trim();
+      const firstWord = cleanDesc.split(/\s+/)[0];
+      if (firstWord && firstWord.length > 3) {
+        const pattern = `%${firstWord}%`;
+        const dupRows = await sql`
+          SELECT *
+          FROM complaints
+          WHERE category = ${data.category}
+            AND status NOT IN ('RESOLVED', 'REJECTED')
+            AND description ILIKE ${pattern}
+            AND created_at >= NOW() - INTERVAL '12 hours'
+          ORDER BY created_at DESC
+          LIMIT 1
+        `;
+        if (dupRows.length > 0) {
+          return dupRows[0] as Complaint;
+        }
+      }
+    }
+    return null;
+  }
+
+  const db = getDb();
+  if (data.route_id && data.category) {
+    const dup = db.prepare(`
+      SELECT *
+      FROM complaints
+      WHERE route_id = ?
+        AND category = ?
+        AND status NOT IN ('RESOLVED', 'REJECTED')
+        AND datetime(created_at) >= datetime('now', '-24 hours')
+      ORDER BY created_at DESC
+      LIMIT 1
+    `).get(data.route_id, data.category) as Complaint | undefined;
+    if (dup) return dup;
+  }
+
+  if (data.category && data.description && data.description.length > 5) {
+    const cleanDesc = data.description.trim();
+    const firstWord = cleanDesc.split(/\s+/)[0];
+    if (firstWord && firstWord.length > 3) {
+      const pattern = `%${firstWord}%`;
+      const dup = db.prepare(`
+        SELECT *
+        FROM complaints
+        WHERE category = ?
+          AND status NOT IN ('RESOLVED', 'REJECTED')
+          AND description LIKE ?
+          AND datetime(created_at) >= datetime('now', '-12 hours')
+        ORDER BY created_at DESC
+        LIMIT 1
+      `).get(data.category, pattern) as Complaint | undefined;
+      if (dup) return dup;
+    }
+  }
+
+  return null;
+}
+
 export async function createComplaint(data: {
   route_id?: string;
   category: string;
@@ -209,6 +291,7 @@ export async function createComplaint(data: {
   evidence_url?: string;
   depot_id?: string;
   passenger_email?: string;
+  parent_reference_number?: string;
 }): Promise<Complaint> {
   const sql = getNeonSql();
   let finalDepotId = data.depot_id || null;
@@ -232,21 +315,19 @@ export async function createComplaint(data: {
     const refNum = await generateReferenceNumber(data.route_id);
 
     let isDuplicate = 0;
-    let parentRef: string | null = null;
-    if (data.route_id && data.category) {
-      const dupRows = await sql`
-        SELECT reference_number 
-        FROM complaints 
-        WHERE route_id = ${data.route_id}
-          AND category = ${data.category}
-          AND status NOT IN ('RESOLVED', 'REJECTED')
-          AND created_at >= NOW() - INTERVAL '2 hours'
-        ORDER BY created_at DESC
-        LIMIT 1
-      `;
-      if (dupRows.length > 0) {
+    let parentRef: string | null = data.parent_reference_number || null;
+
+    if (parentRef) {
+      isDuplicate = 1;
+    } else {
+      const existingDup = await findDuplicateComplaint({
+        route_id: data.route_id,
+        category: data.category,
+        description: data.description,
+      });
+      if (existingDup) {
         isDuplicate = 1;
-        parentRef = dupRows[0].reference_number;
+        parentRef = existingDup.reference_number;
       }
     }
 
@@ -331,22 +412,19 @@ export async function createComplaint(data: {
   const refNum = await generateReferenceNumber(data.route_id);
 
   let isDuplicate = 0;
-  let parentRef: string | null = null;
-  if (data.route_id && data.category) {
-    const duplicateMatch = db.prepare(`
-      SELECT reference_number 
-      FROM complaints 
-      WHERE route_id = ? 
-        AND category = ? 
-        AND status NOT IN ('RESOLVED', 'REJECTED')
-        AND datetime(created_at) >= datetime('now', '-2 hours')
-      ORDER BY created_at DESC
-      LIMIT 1
-    `).get(data.route_id, data.category) as { reference_number: string } | undefined;
+  let parentRef: string | null = data.parent_reference_number || null;
 
-    if (duplicateMatch) {
+  if (parentRef) {
+    isDuplicate = 1;
+  } else {
+    const existingDup = await findDuplicateComplaint({
+      route_id: data.route_id,
+      category: data.category,
+      description: data.description,
+    });
+    if (existingDup) {
       isDuplicate = 1;
-      parentRef = duplicateMatch.reference_number;
+      parentRef = existingDup.reference_number;
     }
   }
 

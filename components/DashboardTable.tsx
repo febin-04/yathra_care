@@ -340,6 +340,13 @@ export default function DashboardTable({ initialDepotId }: { initialDepotId?: st
                           ) : null}
                           <span>{item.reference_number}</span>
                         </div>
+                        {item.is_duplicate ? (
+                          <div className="mt-1">
+                            <span className="bg-amber-100 text-amber-800 text-[10px] font-extrabold px-2 py-0.5 rounded-md border border-amber-200">
+                              🔗 Dup of #{item.parent_reference_number || 'Parent'}
+                            </span>
+                          </div>
+                        ) : null}
                       </td>
 
                       <td className="p-4 whitespace-nowrap">

@@ -7,6 +7,7 @@ import {
   CheckCircle2,
   Clock,
   AlertCircle,
+  AlertTriangle,
   Search,
   MapPin,
   Bus,
@@ -67,6 +68,48 @@ export default function GrievanceForm({ initialRouteId }: GrievanceFormProps = {
   const [lookupRef, setLookupRef] = useState('');
   const [searchedComplaint, setSearchedComplaint] = useState<Complaint | null>(null);
   const [lookupError, setLookupError] = useState<string | null>(null);
+
+  // Duplicate Detection State
+  const [detectedDuplicate, setDetectedDuplicate] = useState<Complaint | null>(null);
+  const [isCheckingDuplicate, setIsCheckingDuplicate] = useState(false);
+  const [linkToDuplicateRef, setLinkToDuplicateRef] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (!selectedCategory) {
+      setDetectedDuplicate(null);
+      setLinkToDuplicateRef(null);
+      return;
+    }
+
+    const timer = setTimeout(async () => {
+      setIsCheckingDuplicate(true);
+      try {
+        const res = await fetch('/api/complaints/check-duplicate', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            route_id: selectedRouteId || undefined,
+            category: selectedCategory,
+            description,
+          }),
+        });
+        const data = await res.json();
+        if (data.success && data.isDuplicate && data.parentComplaint) {
+          setDetectedDuplicate(data.parentComplaint);
+          setLinkToDuplicateRef(data.parentComplaint.reference_number);
+        } else {
+          setDetectedDuplicate(null);
+          setLinkToDuplicateRef(null);
+        }
+      } catch (e) {
+        console.error('Duplicate check error:', e);
+      } finally {
+        setIsCheckingDuplicate(false);
+      }
+    }, 400);
+
+    return () => clearTimeout(timer);
+  }, [selectedCategory, selectedRouteId, description]);
 
   const desktopDropdownRef = useRef<HTMLDivElement>(null);
   const mobileDropdownRef = useRef<HTMLDivElement>(null);
@@ -243,6 +286,7 @@ export default function GrievanceForm({ initialRouteId }: GrievanceFormProps = {
       evidence_url: evidenceUrl || undefined,
       depot_id: mappedDepotObj?.id || undefined,
       passenger_email: passengerEmail || undefined,
+      parent_reference_number: linkToDuplicateRef || undefined,
     };
 
     // Check if offline
@@ -785,6 +829,58 @@ export default function GrievanceForm({ initialRouteId }: GrievanceFormProps = {
                         required
                       />
                     </div>
+
+                    {/* Duplicate Warning Banner */}
+                    {detectedDuplicate && (
+                      <div className="bg-amber-50 border-2 border-amber-300 rounded-2xl p-4 space-y-3 shadow-sm text-slate-800 animate-fade-in">
+                        <div className="flex items-start gap-2.5">
+                          <div className="p-2 bg-amber-500 text-white rounded-xl shrink-0 mt-0.5">
+                            <AlertTriangle className="w-4 h-4" />
+                          </div>
+                          <div>
+                            <h4 className="text-xs font-black uppercase text-amber-950 tracking-wider">
+                              ⚠️ Similar Active Grievance Found (#{detectedDuplicate.reference_number})
+                            </h4>
+                            <p className="text-xs text-amber-800 font-medium mt-0.5">
+                              An open complaint for <strong className="font-extrabold text-amber-950">{detectedDuplicate.category}</strong> was recently registered on this route.
+                            </p>
+                          </div>
+                        </div>
+
+                        <div className="bg-white/90 p-3 rounded-xl border border-amber-200 text-xs space-y-1">
+                          <div className="flex justify-between font-mono font-bold text-amber-900">
+                            <span>Ref: {detectedDuplicate.reference_number}</span>
+                            <span className="bg-amber-100 px-2 py-0.5 rounded text-[10px] text-amber-800 font-sans uppercase font-bold">{detectedDuplicate.status}</span>
+                          </div>
+                          <p className="text-slate-700 line-clamp-2 italic text-[11px]">"{detectedDuplicate.description}"</p>
+                        </div>
+
+                        <div className="flex flex-col sm:flex-row gap-2 pt-1">
+                          <button
+                            type="button"
+                            onClick={() => setLinkToDuplicateRef(detectedDuplicate.reference_number)}
+                            className={`flex-1 text-xs py-2.5 px-3 rounded-xl font-extrabold transition-all flex items-center justify-center gap-1.5 border cursor-pointer ${
+                              linkToDuplicateRef === detectedDuplicate.reference_number
+                                ? 'bg-amber-600 text-white border-amber-700 shadow-sm'
+                                : 'bg-white text-amber-900 border-amber-300 hover:bg-amber-100'
+                            }`}
+                          >
+                            <span>🔗 Attach to Ticket #{detectedDuplicate.reference_number}</span>
+                          </button>
+                          <button
+                            type="button"
+                            onClick={() => setLinkToDuplicateRef(null)}
+                            className={`text-xs py-2.5 px-3 rounded-xl font-bold transition-all border cursor-pointer ${
+                              linkToDuplicateRef === null
+                                ? 'bg-slate-800 text-white border-slate-900'
+                                : 'bg-white text-slate-600 border-slate-200 hover:bg-slate-100'
+                            }`}
+                          >
+                            <span>File as New Ticket</span>
+                          </button>
+                        </div>
+                      </div>
+                    )}
                   </div>
                 </form>
               </div>
@@ -1142,6 +1238,53 @@ export default function GrievanceForm({ initialRouteId }: GrievanceFormProps = {
                           />
                         </div>
                       </div>
+
+                      {/* Mobile Duplicate Warning Banner */}
+                      {detectedDuplicate && (
+                        <div className="bg-amber-50 border-2 border-amber-300 rounded-2xl p-4 space-y-3 text-slate-800 animate-fade-in">
+                          <div className="flex items-start gap-2">
+                            <AlertTriangle className="w-5 h-5 text-amber-600 shrink-0 mt-0.5" />
+                            <div>
+                              <h4 className="text-xs font-black uppercase text-amber-950">
+                                ⚠️ Similar Ticket Found (#{detectedDuplicate.reference_number})
+                              </h4>
+                              <p className="text-[11px] text-amber-800 font-medium">
+                                An active complaint for {detectedDuplicate.category} already exists.
+                              </p>
+                            </div>
+                          </div>
+
+                          <div className="bg-white/80 p-2.5 rounded-xl text-xs space-y-1">
+                            <span className="font-mono font-bold text-amber-900 block">Ref: {detectedDuplicate.reference_number} ({detectedDuplicate.status})</span>
+                            <p className="text-slate-600 line-clamp-2 text-[11px]">"{detectedDuplicate.description}"</p>
+                          </div>
+
+                          <div className="flex gap-2">
+                            <button
+                              type="button"
+                              onClick={() => setLinkToDuplicateRef(detectedDuplicate.reference_number)}
+                              className={`flex-1 text-[11px] py-2 px-2 rounded-xl font-bold transition-all border ${
+                                linkToDuplicateRef === detectedDuplicate.reference_number
+                                  ? 'bg-amber-600 text-white border-amber-700'
+                                  : 'bg-white text-amber-900 border-amber-300'
+                              }`}
+                            >
+                              Attach to #{detectedDuplicate.reference_number}
+                            </button>
+                            <button
+                              type="button"
+                              onClick={() => setLinkToDuplicateRef(null)}
+                              className={`text-[11px] py-2 px-2 rounded-xl font-bold border ${
+                                linkToDuplicateRef === null
+                                  ? 'bg-slate-800 text-white'
+                                  : 'bg-white text-slate-600 border-slate-200'
+                              }`}
+                            >
+                              New Ticket
+                            </button>
+                          </div>
+                        </div>
+                      )}
                     </div>
                   </div>
                 )}
