@@ -81,6 +81,31 @@ export default function DashboardTable({ initialDepotId }: { initialDepotId?: st
     fetchComplaints();
   }, [selectedDepot, selectedCategory, selectedStatus, escalatedOnly, searchTerm]);
 
+  const handleCategoryChange = async (id: number | string, newCategory: string) => {
+    setErrorMsg(null);
+    try {
+      const res = await fetch(`/api/complaints/${id}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          category: newCategory,
+          changed_by: 'DEPOT_ADMIN',
+        }),
+      });
+      const data = await res.json();
+      if (data.success) {
+        fetchComplaints();
+        if (activeComplaint && (activeComplaint.id === id || activeComplaint.reference_number === id)) {
+          setActiveComplaint(data.data);
+        }
+      } else {
+        setErrorMsg(data.error || 'Category update failed.');
+      }
+    } catch (err) {
+      setErrorMsg('Network error while updating category.');
+    }
+  };
+
   const handleStatusChange = async (id: number | string, newStatus: string) => {
     setErrorMsg(null);
     try {
@@ -355,9 +380,17 @@ export default function DashboardTable({ initialDepotId }: { initialDepotId?: st
                       </td>
 
                       <td className="p-4 font-medium text-slate-700 whitespace-nowrap">
-                        <span className="bg-slate-100 text-slate-800 text-xs px-2.5 py-1 rounded-lg">
-                          {item.category}
-                        </span>
+                        <select
+                          value={item.category}
+                          onChange={(e) => handleCategoryChange(item.id, e.target.value)}
+                          className="bg-slate-100 hover:bg-slate-200 text-slate-800 text-xs px-2.5 py-1 rounded-lg border border-slate-200 focus:outline-none focus:ring-1 focus:ring-brand-500 font-bold cursor-pointer transition-colors"
+                        >
+                          {categories.map((c) => (
+                            <option key={c.id} value={c.name}>
+                              {c.name}
+                            </option>
+                          ))}
+                        </select>
                       </td>
 
                       <td className="p-4 max-w-xs">

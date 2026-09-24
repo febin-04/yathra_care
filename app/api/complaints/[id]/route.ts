@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { getComplaintById, transitionComplaintStatus } from '@/lib/complaints';
+import { getComplaintById, transitionComplaintStatus, updateComplaintCategory } from '@/lib/complaints';
 
 export async function GET(
   request: NextRequest,
@@ -22,19 +22,26 @@ export async function PATCH(
 ) {
   try {
     const body = await request.json();
-    if (!body.status) {
-      return NextResponse.json({ success: false, error: 'Status is required' }, { status: 400 });
+    if (!body.status && !body.category) {
+      return NextResponse.json({ success: false, error: 'Status or Category is required' }, { status: 400 });
     }
 
     const changedBy = body.changed_by || 'DEPOT_ADMIN';
-    const notes = body.notes || `Status transitioned to ${body.status}`;
+    let updated;
 
-    const updated = await transitionComplaintStatus(params.id, body.status, changedBy, notes);
+    if (body.category) {
+      updated = await updateComplaintCategory(params.id, body.category, changedBy);
+    }
+    if (body.status) {
+      const notes = body.notes || `Status transitioned to ${body.status}`;
+      updated = await transitionComplaintStatus(params.id, body.status, changedBy, notes);
+    }
+
     return NextResponse.json({ success: true, data: updated });
   } catch (error: any) {
-    console.error('State Machine Transition Error:', error.message);
+    console.error('Update Complaint Error:', error.message);
     return NextResponse.json(
-      { success: false, error: error.message || 'Invalid status transition' },
+      { success: false, error: error.message || 'Invalid update request' },
       { status: 400 }
     );
   }

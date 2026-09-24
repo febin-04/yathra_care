@@ -589,6 +589,67 @@ export async function transitionComplaintStatus(
   return updatedComplaint!;
 }
 
+export async function updateComplaintCategory(
+  id: number | string,
+  newCategory: string,
+  changedBy: string = 'DEPOT_ADMIN'
+): Promise<Complaint> {
+  const currentComplaint = await getComplaintById(id);
+  if (!currentComplaint) {
+    throw new Error(`Complaint with ID/Ref '${id}' not found`);
+  }
+
+  const sql = getNeonSql();
+  let slaHours = 24;
+  if (sql) {
+    const catRows = await sql`SELECT sla_hours FROM categories WHERE name = ${newCategory} OR id = ${newCategory}`;
+    if (catRows.length > 0 && catRows[0].sla_hours) slaHours = catRows[0].sla_hours;
+  } else {
+    const db = getDb();
+    const catRecord = db.prepare('SELECT sla_hours FROM categories WHERE name = ? OR id = ?').get(newCategory, newCategory) as { sla_hours: number } | undefined;
+    if (catRecord) slaHours = catRecord.sla_hours;
+  }
+
+  const createdAt = new Date(currentComplaint.created_at);
+  const slaDeadline = new Date(createdAt.getTime() + slaHours * 3600 * 1000).toISOString();
+
+  if (sql) {
+    await sql`
+      UPDATE complaints 
+      SET category = ${newCategory}, sla_deadline = ${slaDeadline}
+      WHERE id = ${currentComplaint.id};
+    `;
+    await sql`
+      INSERT INTO status_history (complaint_id, from_status, to_status, changed_at, notes, changed_by)
+      VALUES (${currentComplaint.id}, ${currentComplaint.status}, ${currentComplaint.status}, ${new Date().toISOString()}, ${`Category re-assigned to ${newCategory}`}, ${changedBy});
+    `;
+    return (await getComplaintById(currentComplaint.id))!;
+  }
+
+  const db = getDb();
+  db.transaction(() => {
+    db.prepare(`
+      UPDATE complaints 
+      SET category = ?, sla_deadline = ?
+      WHERE id = ?
+    `).run(newCategory, slaDeadline, currentComplaint.id);
+
+    db.prepare(`
+      INSERT INTO status_history (complaint_id, from_status, to_status, changed_at, notes, changed_by)
+      VALUES (?, ?, ?, ?, ?, ?)
+    `).run(
+      currentComplaint.id,
+      currentComplaint.status,
+      currentComplaint.status,
+      new Date().toISOString(),
+      `Category re-assigned to ${newCategory}`,
+      changedBy
+    );
+  })();
+
+  return (await getComplaintById(currentComplaint.id))!;
+}
+
 export async function checkAndTriggerSLAEscalations(): Promise<number> {
   const sql = getNeonSql();
   if (sql) {
